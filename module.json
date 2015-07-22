@@ -1,0 +1,65 @@
+{
+    "dependencies": [],
+    "singleton": true,
+    "category": "environment",
+    "author": "Maroš Kollár",
+    "homepage": "http://k-1.com",
+    "icon": "icon.png",
+    "version": "1.0.0",
+    "maturity": "stable",
+    "repository": {
+        "type": "git",
+        "source": "https://github.com/maros/Zway-DeviceMove"
+    },
+    "defaults": {
+        "title": "__title__",
+        "description": "__description__"
+    },
+    "schema": {
+        "type": "object",
+        "properties": {
+            "devices": {
+                "type": "array",
+                "items": {
+                    "field": "enum",
+                    "datasource": "namespaces",
+                    "enum": "namespaces:devices_switchMultilevel:deviceName",
+                    "required": true
+                }
+            },
+            "unit_temperature": {
+                "type": "select",
+                "enum": ["celsius", "fahrenheit"],
+                "required": true
+            },
+            "unit_system": {
+                "type": "select",
+                "enum": ["metric", "imperial"],
+                "required": true
+            },
+            "api_key": {
+                "type": "string",
+                "required": true
+            }
+        },
+        "required": true
+    },
+    "options": {
+        "fields": {
+            "location": {
+                "label": "__location__"
+            },
+            "unit_temperature": {
+                "label": "__unit_temperature__",
+                "optionLabels": ["°C", "°F"]
+            },
+            "unit_system": {
+                "label": "__unit_system__",
+                "optionLabels": ["__unit_system_metric__", "__unit_system_imperial__"]
+            },
+            "api_key": {
+                "label": "__api_key__"
+            }
+        }
+    }
+}
