@@ -26,31 +26,48 @@ DeviceMove.prototype.init = function (config) {
     DeviceMove.super_.prototype.init.call(this, config);
     var self = this;
     
-    self.controller.devices.create(
+    self.devices = {};
+    
+    var devicesConfig = self.config.devices;
+    _.each(devicesConfig,function(deviceId) {
+        //deviceId
+        zway.devices[deviceId].instances[I].SwitchBinary.Set(255);
+        
+        self.devices[deviceId] = this.controller.devices.create({
+            deviceId: "DeviceMove_" + self.id+'_'+deviceId,
+            defaults: {
+                metrics: {
+                    title: self.config.title
+                }
+            },
+            overlay: {
+                deviceType: 'switchMultilevel',
+                metrics: {
+                    title: self.config.title
+                }
+            },
+            /*
+            handler: function(command, args) {
+                var level = command;
+                if (level !== 'on') {
+                    level = 'off';
+                }
+                this.set("metrics:level", level);
+                this.set("metrics:icon", "/ZAutomation/api/v1/load/modulemedia/RandomDevice/icon_"+level+".png");
+            },
+            */
+            moduleId: self.id
+        });
+    });
 };
 
 DeviceMove.prototype.stop = function () {
+    var self = this;
     DeviceMove.super_.prototype.stop.call(this);
-    var self = this;
-    
-};
-
-DeviceMove.prototype.addDevice = function(prefix,params) {
-    var self = this;
-    
-    var device_params = _.deepExtend(
-        params,
-        {
-            deviceId: "DeviceMove_"+prefix+"_" + this.id,
-            defaults: {
-                deviceType: "sensorMultilevel",
-            },
-            overlay: {},
-            moduleId: prefix+"_"+this.id
-        }
-    );
-    
-    this.devices[prefix] = self.controller.devices.create(device_params);
+    _.each(this.devices,function(deviceId,deviceObject){
+        self.controller.devices.remove(deviceObject.id);
+    });
+    this.devices = {};
 };
 
 // ----------------------------------------------------------------------------
