@@ -1,0 +1,7 @@
+{
+  "title": "Devide move",
+  "description": "Move devices based on timing information",
+  "devices_label": "Devices",
+  "time_label": "Time",
+  "time_helper": "Time in seconds to fully open/close device"
+}
