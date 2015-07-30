@@ -1,7 +1,13 @@
 {
-  "title": "Devide move",
-  "description": "Move devices based on timing information",
+  "title": "Device move",
+  "description": "Move devices like blinds based on timing information",
   "devices_label": "Devices",
-  "time_label": "Time",
-  "time_helper": "Time in seconds to fully open/close device"
+  "time_label": "Device time",
+  "time_helper": "Time in seconds to fully open/close device",
+  "report_label": "Device report",
+  "report_helper": "Sensor that reports the correct device state",
+  "report_label_open": "When fully opened",
+  "report_label_close": "When fully closed",
+  "report_label_both": "When fully opened or closed",
+  "report_label_none": "None"
 }

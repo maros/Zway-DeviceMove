@@ -19,6 +19,7 @@
         "type": "object",
         "properties": {
             "devices": {
+                "required": true,
                 "type": "array",
                 "items": {
                     "field": "enum",
@@ -30,18 +31,36 @@
             "time": {
                 "type": "string",
                 "required": true
+            },
+            "report": {
+                "type": "select",
+                "enum": ["open", "close", "both", "none"],
+                "required": true
             }
         },
         "required": true
     },
     "options": {
         "fields": {
-            "devices": {
-                "label": "__devices_label__"
-            },
             "time": {
                 "label": "__time_label__",
                 "helper": "__time_helper__"
+            },
+            "devices": {
+                "label": "__devices_label__",
+                "fields": {
+                    "item": {
+                        "type": "select",
+                        "datasource": "namespaces",
+                        "field": "optionLabels",
+                        "optionLabels": "namespaces:devices_switchMultilevel:deviceName"
+                    }
+                }
+            },
+            "report": {
+                "label": "__report_label__",
+                "helper": "__report_helper__",
+                "optionLabels": ["__report_label_open__","__report_label_close__","__report_label_both__","__report_label_none__"]
             }
         }
     }

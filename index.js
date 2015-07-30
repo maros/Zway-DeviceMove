@@ -5,7 +5,7 @@ Version: 1.0.0
 -----------------------------------------------------------------------------
 Author: maros@k-1.com <maros@k-1.com>
 Description:
-    This module checks weather updates via weatherundergound.com
+    Move devices to specified position based on timing information
 
 ******************************************************************************/
 
@@ -28,10 +28,14 @@ DeviceMove.prototype.init = function (config) {
     
     self.devices = {};
     
+    console.log('DEVICE MOVE INSTANTIATE');
+    console.logJS(self.config);
+    
     var devicesConfig = self.config.devices;
     _.each(devicesConfig,function(deviceId) {
         //deviceId
-        zway.devices[deviceId].instances[I].SwitchBinary.Set(255);
+        console.log('ADD DEVICE:'+deviceId);
+        //zway.devices[deviceId];
         
         self.devices[deviceId] = this.controller.devices.create({
             deviceId: "DeviceMove_" + self.id+'_'+deviceId,
@@ -46,16 +50,9 @@ DeviceMove.prototype.init = function (config) {
                     title: self.config.title
                 }
             },
-            /*
-            handler: function(command, args) {
-                var level = command;
-                if (level !== 'on') {
-                    level = 'off';
-                }
-                this.set("metrics:level", level);
-                this.set("metrics:icon", "/ZAutomation/api/v1/load/modulemedia/RandomDevice/icon_"+level+".png");
+            handler: function(level, args) {
+                self.moveDevice(deviceId,level)
             },
-            */
             moduleId: self.id
         });
     });
@@ -74,7 +71,12 @@ DeviceMove.prototype.stop = function () {
 // --- Module methods
 // ----------------------------------------------------------------------------
 
-
+DeviceMove.prototype.moveDevice = function(devideId,level) {
+    var vDev        = self.devices[deviceId];
+    var oldLevel    = vDev.get("metrics:level");
+    console.log("SET from "+oldLevel+' to '+level);
+    //vDev.set("metrics:icon", "/ZAutomation/api/v1/load/modulemedia/RandomDevice/icon_"+level+".png");
+}
 
 
  
