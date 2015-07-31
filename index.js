@@ -33,9 +33,14 @@ DeviceMove.prototype.init = function (config) {
     
     var devicesConfig = self.config.devices;
     _.each(devicesConfig,function(deviceId) {
-        //deviceId
+        var device =  self.controller.devices.get(deviceId);
+
         console.log('ADD DEVICE:'+deviceId);
-        //zway.devices[deviceId];
+        console.logJS(device);
+        
+        // TODO Get Icon
+        // TODO Get Name
+        // TODO Hide
         
         self.devices[deviceId] = this.controller.devices.create({
             deviceId: "DeviceMove_" + self.id+'_'+deviceId,
@@ -56,6 +61,8 @@ DeviceMove.prototype.init = function (config) {
             moduleId: self.id
         });
     });
+    
+    // TODO init polling
 };
 
 DeviceMove.prototype.stop = function () {
