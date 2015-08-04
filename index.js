@@ -103,12 +103,12 @@ DeviceMove.prototype.moveDevice = function(deviceId,command,args) {
     var self        = this;
     var vDev        = self.devices[deviceId];
     var oldLevel    = vDev.get("metrics:level");
-    var newLevel    = paseInt(args.level);
+    var newLevel    = parseInt(args.level);
     //var diffDir     = deviceTime / 99;
     var deviceTime  = parseInt(self.config.time);
     var stepTime    = deviceTime / 99;
     var device      = self.controller.devices.get(deviceId);
-    var moveDir     = undefined;
+    var moveCommand     = undefined;
     
     console.log("DeviceMove SET from "+oldLevel+' to '+command);
     
@@ -124,22 +124,23 @@ DeviceMove.prototype.moveDevice = function(deviceId,command,args) {
         }
         
         var diffTime = Math.abs(stepTime * diffLevel);
-        moveDir = (oldLevel > newLevel) ? 'up':'down';
+        moveCommand = (oldLevel > newLevel) ? 'startUp':'startDown';
         
         newLevel     = diffTime * stepTime;
-        
-        device.performCommand(moveDir);
         
         setTimeout(
             _.bind(self.stopDevice,self,deviceId),
             (diffTime * 1000)
         );
     } else if (command === 'on'|| command === 'up') {
-        moveDir = 'up';
+        moveCommand = 'upMax';
+        newLevel = 99;
     } else if (command === 'off'|| command === 'down') {
-        moveDir = 'down';
+        moveCommand = 'down';
+        newLevel = 0;
     }
     
+    device.performCommand(moveCommand);
     self.devices[deviceId].set('metrics:level',newLevel);
     
     // {"level":"22"}
