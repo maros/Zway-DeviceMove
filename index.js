@@ -61,9 +61,7 @@ DeviceMove.prototype.init = function (config) {
                         linked: deviceId
                     }
                 },
-                handler: function(mode, args) {
-                    self.moveDevice(deviceId,mode,args)
-                },
+                handler: _.bind(self.moveDevice,self,deviceId),
                 //updateTime: device.get('updateTime'),
                 moduleId: self.id
             });
@@ -101,14 +99,57 @@ DeviceMove.prototype.stop = function() {
 // --- Module methods
 // ----------------------------------------------------------------------------
 
-DeviceMove.prototype.moveDevice = function(deviceId,mode,level) {
+DeviceMove.prototype.moveDevice = function(deviceId,command,args) {
     var self        = this;
     var vDev        = self.devices[deviceId];
     var oldLevel    = vDev.get("metrics:level");
-    console.log("DeviceMove SET from "+oldLevel+' to '+mode+' '+level);
-    console.logJS(level);
+    var newLevel    = paseInt(args.level);
+    //var diffDir     = deviceTime / 99;
+    var deviceTime  = parseInt(self.config.time);
+    var stepTime    = deviceTime / 99;
+    var device      = self.controller.devices.get(deviceId);
+    var moveDir     = undefined;
+    
+    console.log("DeviceMove SET from "+oldLevel+' to '+command);
+    
+    //instance = this.zway.devices[nodeId].instances[instanceId],
+    //instanceCommandClasses = Object.keys(instance.commandClasses).map(function(x) { return parseInt(x); }),
+    //cc = instance.commandClasses[commandClassId],
+    
+    if (command === 'exact') {
+        var diffLevel = Math.abs(oldLevel - newLevel);
+        
+        if (diffLevel <= 5) {
+            return;
+        }
+        
+        var diffTime = Math.abs(stepTime * diffLevel);
+        moveDir = (oldLevel > newLevel) ? 'up':'down';
+        
+        newLevel     = diffTime * stepTime;
+        
+        device.performCommand(moveDir);
+        
+        setTimeout(
+            _.bind(self.stopDevice,self,deviceId),
+            (diffTime * 1000)
+        );
+    } else if (command === 'on'|| command === 'up') {
+        moveDir = 'up';
+    } else if (command === 'off'|| command === 'down') {
+        moveDir = 'down';
+    }
+    
+    self.devices[deviceId].set('metrics:level',newLevel);
+    
     // {"level":"22"}
     //vDev.set("metrics:icon", "/ZAutomation/api/v1/load/modulemedia/RandomDevice/icon_"+level+".png");
+};
+
+DeviceMove.prototype.stopDevice = function(deviceId) {
+    var self        = this;
+    var device      = self.controller.devices.get(deviceId);
+    device.performCommand("stop");
 };
 
 DeviceMove.prototype.pollDevice = function() {
