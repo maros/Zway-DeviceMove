@@ -5,6 +5,7 @@
     "author": "Maroš Kollár",
     "homepage": "http://k-1.com",
     "icon": "icon.png",
+    "moduleName": "DeviceMove",
     "version": "1.0.0",
     "maturity": "stable",
     "repository": {
