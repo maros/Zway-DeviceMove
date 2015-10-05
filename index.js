@@ -26,55 +26,56 @@ DeviceMove.prototype.init = function (config) {
     DeviceMove.super_.prototype.init.call(this, config);
     var self = this;
     
-    self.devices = {};
+    self.virtualDevices = {};
     self.callbacks = {};
     
-    console.log('DeviceMove: Init');
+    //self.statusId = "DeviceMove_" + self.id;
+    //self.status = loadObject(self.statusId) || {};
     
-    var devicesConfig = self.config.devices;
-    setTimeout(function() {
-        _.each(devicesConfig,function(deviceId) {
-            var device  = self.controller.devices.get(deviceId);
-            
-            console.log('DeviceMove: Process '+deviceId);
-            console.log('DeviceMove: Got '+device);
-            console.logJS(device);
-            
-            var icon    = device.get('metrics:icon') || "blinds";
-            
-            //device.set('visibility',false);
-            //{"creatorId":11,"deviceType":"switchMultilevel","h":-1669838591,"hasHistory":false,"id":"DummyDevice_11","location":0,"metrics":{"level":"1","title":"Dummy 11"},"permanently_hidden":false,"tags":[],"visibility":true,"updateTime":1438377648}
-            
-            self.devices[deviceId] = this.controller.devices.create({
-                deviceId: "DeviceMove_" + self.id+'_'+deviceId,
-                location: device.get('location'),
-                tags: device.get('tags'),
-                defaults: {
-                    metrics: {
-                        title: device.get('metrics:title'),
-                        icon: icon
-                    }
-                },
-                overlay: {
-                    deviceType: 'switchMultilevel',
-                    metrics: {
-                        linked: deviceId
-                    }
-                },
-                handler: _.bind(self.moveDevice,self,deviceId),
-                //updateTime: device.get('updateTime'),
-                moduleId: self.id
-            });
-            
-            self.callbacks[deviceId] = _.bind(self.checkDevice,self,deviceId);
-            device.on('change:metrics:level',self.callbacks[deviceId]);
-            self.callbacks[deviceId](device);
+    setTimeout(_.bind(self.initCallback,self),10000);
+    self.timer = setInterval(_.bind(self.pollDevices,self), 10*60*1000);
+};
+
+DeviceMove.prototype.initCallback = function() {
+    var self = this;
+    
+    _.each(self.config.devices,function(deviceEntry) {
+        var deviceId    = deviceEntry.device;
+        var realDevice  = self.controller.devices.get(deviceId);
+        var icon        = realDevice.get('metrics:icon') || "blinds";
+        
+        var virtualDevice = this.controller.devices.create({
+            deviceId: "DeviceMove_" + self.id+'_'+deviceId,
+            location: realDevice.get('location'),
+            tags: realDevice.get('tags'),
+            defaults: {
+                metrics: {
+                    title: realDevice.get('metrics:title')+"VIRT",
+                    icon: icon
+                }
+            },
+            overlay: {
+                deviceType: 'switchMultilevel'
+            },
+            handler: _.bind(self.moveDevice,self,deviceId),
+            moduleId: self.id
         });
-    },10000);
-    
-    this.timer = setInterval(function() {
-        self.pollDevice(self);
-    }, 10*60*1000);
+        
+        // Primary init
+        var saveLevel = parseInt(realDevice.get('metrics:savelevel'));
+        if (! isNaN(saveLevel)) {
+            console.log('INIT WITH'+saveLevel);
+            virtualDevice.set('metrics:level', saveLevel);
+        }
+        
+        self.virtualDevices[deviceId] = virtualDevice;
+        
+        var callback = _.bind(self.checkDevice,self,deviceId);
+        callback(realDevice);
+        
+        realDevice.on('change:metrics:level',callback);
+        self.callbacks[deviceId] = callback;
+    });
 };
 
 DeviceMove.prototype.stop = function() {
@@ -82,17 +83,20 @@ DeviceMove.prototype.stop = function() {
     DeviceMove.super_.prototype.stop.call(this);
     
     // Remove device
-    _.each(this.devices,function(deviceId,deviceObject){
-        var device  = self.controller.devices.get(deviceId);
-        self.controller.devices.remove(self.devices[deviceId]);
+    _.each(self.virtualDevices,function(deviceId,deviceObject){
+        self.controller.devices.remove(deviceObject);
     });
     
     // Remove callbacks
-    _.each(this.callbacks,function(deviceId,callbackFunction) {
+    _.each(self.callbacks,function(deviceId,callbackFunction) {
         var device  = self.controller.devices.get(deviceId);
         device.off('change:metrics:level',callbackFunction);
     });
-    this.devices = {};
+    
+    self.virtualDevices = {};
+    self.callbacks = {};
+    
+    //saveObject(self.statusId,self.status);
 };
 
 // ----------------------------------------------------------------------------
@@ -100,17 +104,22 @@ DeviceMove.prototype.stop = function() {
 // ----------------------------------------------------------------------------
 
 DeviceMove.prototype.moveDevice = function(deviceId,command,args) {
-    var self        = this;
-    var vDev        = self.devices[deviceId];
-    var oldLevel    = vDev.get("metrics:level");
-    var newLevel    = parseInt(args.level);
-    //var diffDir     = deviceTime / 99;
-    var deviceTime  = parseInt(self.config.time);
-    var stepTime    = deviceTime / 99;
-    var device      = self.controller.devices.get(deviceId);
-    var moveCommand     = undefined;
+    var self            = this;
     
-    console.log("DeviceMove SET from "+oldLevel+' to '+command);
+    if (command === 'update') {
+        return;
+    }
+    var virtualDevice   = self.virtualDevices[deviceId];
+    var oldLevel        = virtualDevice.get("metrics:level");
+    var deviceEntry     = _.find(self.config.devices,function(deviceEntry) { return deviceEntry.device === deviceId; });
+    if (typeof(deviceEntry) === 'undefined') {
+        return;
+    }
+    var deviceTime      = parseInt(deviceEntry.time);
+    var stepTime        = deviceTime / 99;
+    var realDevice      = self.controller.devices.get(deviceId);
+    var moveCommand     = undefined;
+    var newLevel        = parseInt(args.level);
     
     //instance = this.zway.devices[nodeId].instances[instanceId],
     //instanceCommandClasses = Object.keys(instance.commandClasses).map(function(x) { return parseInt(x); }),
@@ -118,20 +127,20 @@ DeviceMove.prototype.moveDevice = function(deviceId,command,args) {
     
     if (command === 'exact') {
         var diffLevel = Math.abs(oldLevel - newLevel);
-        
         if (diffLevel <= 5) {
             return;
         }
-        
-        var diffTime = Math.abs(stepTime * diffLevel);
-        moveCommand = (oldLevel > newLevel) ? 'startUp':'startDown';
-        
-        newLevel     = diffTime * stepTime;
+        var diffTime    = Math.abs(stepTime * diffLevel);
+        moveCommand     = (oldLevel > newLevel) ? 'startDown':'startUp';
+        diffLevel       = Math.abs(diffTime * stepTime);
+        newLevel        = (oldLevel > newLevel) ? oldLevel + diffLevel : oldLevel - diffLevel;
         
         setTimeout(
             _.bind(self.stopDevice,self,deviceId),
             (diffTime * 1000)
         );
+        console.log('>>> RUN FOR '+diffTime);
+        
     } else if (command === 'on'|| command === 'up') {
         moveCommand = 'upMax';
         newLevel = 99;
@@ -140,11 +149,10 @@ DeviceMove.prototype.moveDevice = function(deviceId,command,args) {
         newLevel = 0;
     }
     
-    device.performCommand(moveCommand);
-    self.devices[deviceId].set('metrics:level',newLevel);
-    
-    // {"level":"22"}
-    //vDev.set("metrics:icon", "/ZAutomation/api/v1/load/modulemedia/RandomDevice/icon_"+level+".png");
+    console.log('>>> RUN'+moveCommand);
+    realDevice.performCommand(moveCommand);
+    virtualDevice.set('metrics:level',newLevel);
+    realDevice.set('metrics:savelevel',newLevel);
 };
 
 DeviceMove.prototype.stopDevice = function(deviceId) {
@@ -153,45 +161,50 @@ DeviceMove.prototype.stopDevice = function(deviceId) {
     device.performCommand("stop");
 };
 
-DeviceMove.prototype.pollDevice = function() {
+DeviceMove.prototype.pollDevices = function() {
     var self = this;
-    console.log("DeviceMove POLL");
-    _.each(self.config.devices,function(deviceId) {
-        var device =  self.controller.devices.get(deviceId);
+    
+    _.each(self.config.devices,function(deviceEntry) {
+        var device =  self.controller.devices.get(deviceEntry.device);
         var updateTime = device.get('updateTime');
+        // TODO 
         //device.performCommand("update");
     });
 };
 
-DeviceMove.prototype.checkDevice = function(deviceId,event) {
+DeviceMove.prototype.checkDevice = function(deviceId) {
     var self        = this;
     
-    console.log("DeviceMove CHECK"+deviceId);
-    
-    var rDevice     = self.controller.devices.get(deviceId);
-    var vDevice     = self.devices[deviceId];
-    var rLevel      = parseInt(rDevice.get('metrics:level'));
-    var vLevel      = parseInt(vDevice.get('metrics:level'));
-    var setLevel    = undefined;
+    var realDevice      = self.controller.devices.get(deviceId);
+    var virtualDevice   = self.virtualDevices[deviceId];
+    var realLevel       = parseInt(realDevice.get('metrics:level'));
+    var virtualLevel    = parseInt(virtualDevice.get('metrics:level'));
+    var setLevel        = undefined;
     
     if ((self.config.report === 'open' || self.config.report === 'both')
-        && rLevel >= 99) {
+        && realLevel >= 99) {
         setLevel = 99;
     } else if ((self.config.report === 'close' || self.config.report === 'both')
-        && rLevel === 0) {
+        && realLevel === 0) {
         setLevel = 0;
     }
     
-    if (typeof(vLevel) === 'undefined') {
-        setLevel = rLevel;
+    if (typeof(virtualLevel) === 'undefined') {
+        setLevel = realLevel;
     }
     
+    console.log('CHECK DEVICE'+setLevel);
+    console.logJS(realDevice);
+    
     if (typeof(setLevel) !== 'undefined' 
-        && setLevel !== vLevel) {
+        && setLevel !== virtualLevel) {
         console.log("DeviceMove setLevel "+setLevel);
-        vDevice.set('metrics:level',setLevel);
-        vDevice.set('updateTime',rDevice.get('updateTime'));
+        virtualDevice.set('metrics:level',setLevel);
+        virtualDevice.set('updateTime',realDevice.get('updateTime'));
+        virtualLevel = setLevel;
     }
+    
+    realDevice.set('metrics:savelevel',virtualLevel);
 };
 
  
