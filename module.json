@@ -1,7 +1,7 @@
 {
     "dependencies": [],
     "singleton": true,
-    "category": "environment",
+    "category": "devices",
     "author": "Maroš Kollár",
     "homepage": "http://k-1.com",
     "icon": "icon.png",
@@ -23,15 +23,21 @@
                 "required": true,
                 "type": "array",
                 "items": {
-                    "field": "enum",
-                    "datasource": "namespaces",
-                    "enum": "namespaces:devices_switchMultilevel:deviceName",
-                    "required": true
+                    "type": "object",
+                    "required": true,
+                    "properties": {
+                        "device": {
+                            "field": "enum",
+                            "datasource": "namespaces",
+                            "enum": "namespaces:devices_switchMultilevel:deviceName",
+                            "required": true
+                        },
+                        "time": {
+                            "type": "number",
+                            "required": true
+                        }
+                    }
                 }
-            },
-            "time": {
-                "type": "string",
-                "required": true
             },
             "report": {
                 "type": "select",
@@ -43,18 +49,22 @@
     },
     "options": {
         "fields": {
-            "time": {
-                "label": "__time_label__",
-                "helper": "__time_helper__"
-            },
             "devices": {
                 "label": "__devices_label__",
                 "fields": {
                     "item": {
-                        "type": "select",
-                        "datasource": "namespaces",
-                        "field": "optionLabels",
-                        "optionLabels": "namespaces:devices_switchMultilevel:deviceName"
+                        "fields": {
+                            "device": {
+                                "type": "select",
+                                "datasource": "namespaces",
+                                "field": "optionLabels",
+                                "optionLabels": "namespaces:devices_switchMultilevel:deviceName"
+                            },
+                            "time": {
+                                "label": "__time_label__",
+                                "helper": "__time_helper__"
+                            }
+                        }
                     }
                 }
             },
