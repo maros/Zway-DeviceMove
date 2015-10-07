@@ -1,6 +1,6 @@
 {
-  "title": "Device move",
-  "description": "Move devices like blinds based on timing information",
+  "title": "Move blinds/windows to selected position",
+  "description": "Move devices like blinds based on timing information to a selected position.",
   "devices_label": "Devices",
   "time_label": "Device time",
   "time_helper": "Time in seconds to fully open/close device",
