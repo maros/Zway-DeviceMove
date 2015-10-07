@@ -56,6 +56,9 @@ DeviceMove.prototype.initCallback = function() {
                     icon: icon
                 }
             },
+            overlay: {
+                deviceType: 'switchMultilevel'
+            },
             handler: _.bind(self.moveDevice,self,deviceId),
             moduleId: self.id
         });
