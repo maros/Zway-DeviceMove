@@ -28,6 +28,7 @@ DeviceMove.prototype.init = function (config) {
     
     self.virtualDevices = {};
     self.callbacks = {};
+    self.timers = {};
     
     self.statusId = "DeviceMove_" + self.id;
     self.status = loadObject(self.statusId) || {};
@@ -59,7 +60,18 @@ DeviceMove.prototype.initCallback = function() {
             overlay: {
                 deviceType: 'switchMultilevel'
             },
-            handler: _.bind(self.moveDevice,self,deviceId),
+            handler: function(command,args) {
+                if (command === 'update') {
+                    return;
+                }
+                if (typeof(self.timers[deviceId]) !== 'undefined') {
+                    clearTimeout(self.timers[deviceId]);
+                }
+                self.timers[deviceId] = setTimeout(
+                    _.bind(self.moveDevice,self,deviceId,command,args.level),
+                    1000*2
+                );
+            },
             moduleId: self.id
         });
         
@@ -108,50 +120,52 @@ DeviceMove.prototype.stop = function() {
 // --- Module methods
 // ----------------------------------------------------------------------------
 
-DeviceMove.prototype.moveDevice = function(deviceId,command,args) {
+DeviceMove.prototype.moveDevice = function(deviceId,command,level) {
     var self            = this;
     
-    if (command === 'update') {
-        return;
+    // TODO check paralell movement 
+    
+    if (typeof(self.timers[deviceId]) !== 'undefined') {
+        clearTimeout(self.timers[deviceId]);
     }
+    
     var virtualDevice   = self.virtualDevices[deviceId];
     var oldLevel        = self.status[deviceId];
+    var realDevice      = self.controller.devices.get(deviceId);
     var deviceEntry     = _.find(self.config.devices,function(deviceEntry) { return deviceEntry.device === deviceId; });
     if (typeof(deviceEntry) === 'undefined') {
         return;
     }
     var deviceTime      = parseInt(deviceEntry.time);
-    var stepTime        = deviceTime / 99;
-    var realDevice      = self.controller.devices.get(deviceId);
+    var stepTime        = deviceTime / 100;
     var moveCommand     = undefined;
-    var newLevel        = parseInt(args.level);
+    var newLevel        = parseInt(level);
     
     //instance = this.zway.devices[nodeId].instances[instanceId],
     //instanceCommandClasses = Object.keys(instance.commandClasses).map(function(x) { return parseInt(x); }),
     //cc = instance.commandClasses[commandClassId],
     
-    if (command === 'exact') {
+    if (command === 'on' || command === 'up' || (command === 'exact' && level === 99)) {
+        moveCommand = 'upMax';
+        newLevel = 99;
+    } else if (command === 'off'|| command === 'down' || (command === 'exact' && level === 0)) {
+        moveCommand = 'down';
+        newLevel = 0;
+    } else if (command === 'exact') {
         var diffLevel = Math.abs(oldLevel - newLevel);
         if (diffLevel <= 5) {
             return;
         }
-        var diffTime    = Math.abs(stepTime * diffLevel);
+        var diffTime    = stepTime * diffLevel;
         moveCommand     = (oldLevel > newLevel) ? 'startDown':'startUp';
-        diffLevel       = Math.abs(diffTime * stepTime);
-        newLevel        = (oldLevel > newLevel) ? oldLevel + diffLevel : oldLevel - diffLevel;
+        diffLevel       = Math.abs(diffTime / stepTime);
+        newLevel        = (oldLevel < newLevel) ? oldLevel + diffLevel : oldLevel - diffLevel;
         
         setTimeout(
             _.bind(self.stopDevice,self,deviceId),
             (diffTime * 1000)
         );
         console.log('>>> RUN FOR '+diffTime);
-        
-    } else if (command === 'on'|| command === 'up') {
-        moveCommand = 'upMax';
-        newLevel = 99;
-    } else if (command === 'off'|| command === 'down') {
-        moveCommand = 'down';
-        newLevel = 0;
     }
     
     console.log('>>> RUN'+moveCommand);
