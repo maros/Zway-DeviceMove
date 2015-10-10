@@ -36,6 +36,12 @@
                         "time": {
                             "type": "number",
                             "required": true
+                        },
+                        "relatedDevice": {
+                            "field": "enum",
+                            "datasource": "namespaces",
+                            "enum": "namespaces:devices_switchMultilevel:deviceName",
+                            "required": false
                         }
                     }
                 }
@@ -50,7 +56,29 @@
                 "enum": ["open", "close", "none"],
                 "required": true
             },
+            "relatedCheck": {
+                "type": "boolean",
                 "required": true
+            },
+            "relatedDeviceLimit": {
+                "type": "integer",
+                "dependencies": "relatedCheck",
+                "required": true,
+                "minimum": 0,
+                "maximum": 99
+            },
+            "relatedDeviceComparison": {
+                "type": "select",
+                "enum": ["gt","lt"],
+                "dependencies": "relatedCheck",
+                "required": true
+            },
+            "deviceLimit": {
+                "type": "integer",
+                "dependencies": "relatedCheck",
+                "required": true,
+                "minimum": 0,
+                "maximum": 99
             }
         },
         "required": true
@@ -71,6 +99,13 @@
                             "time": {
                                 "label": "__time_label__",
                                 "helper": "__time_helper__"
+                            },
+                            "relatedDevice": {
+                                "label": "__related_device_label__",
+                                "type": "select",
+                                "datasource": "namespaces",
+                                "field": "optionLabels",
+                                "optionLabels": "namespaces:devices_switchMultilevel:deviceName"
                             }
                         }
                     }
@@ -85,6 +120,34 @@
                 "label": "__report_label__",
                 "helper": "__report_helper__",
                 "optionLabels": ["__report_label_open__","__report_label_close__","__report_label_both__","__report_label_none__"]
+            },
+            "relatedCheck": {
+                "type": "checkbox",
+                "label":"__related_check_label__",
+                "helper":"__related_check_helper__",
+                "default": false
+            },
+            "relatedDeviceLimit": {
+                "label": "__related_device_limit_label__",
+                "helper": "__related_device_limit_helper__",
+                "dependencies": {
+                    "relatedCheck": true
+                }
+            },
+            "relatedDeviceComparison": {
+                "label": "__related_device_comparison_label__",
+                "helper": "__related_device_comparison_helper__",
+                "optionLabels": [">","<"],
+                "dependencies": {
+                    "relatedCheck": true
+                }
+            },
+            "deviceLimit": {
+                "label": "__device_limit_label__",
+                "helper": "__device_limit_helper__",
+                "dependencies": {
+                    "relatedCheck": true
+                }
             }
         }
     }
