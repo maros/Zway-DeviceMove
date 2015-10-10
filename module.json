@@ -14,7 +14,8 @@
     },
     "defaults": {
         "title": "__title__",
-        "description": "__description__"
+        "description": "__description__",
+        "icon": "default"
     },
     "schema": {
         "type": "object",
@@ -39,9 +40,16 @@
                     }
                 }
             },
+            "icon": {
+                "type": "select",
+                "enum": ["default","blind", "window","dimmer"],
+                "required": true
+            },
             "report": {
                 "type": "select",
-                "enum": ["open", "close", "both", "none"],
+                "enum": ["open", "close", "none"],
+                "required": true
+            },
                 "required": true
             }
         },
@@ -67,6 +75,11 @@
                         }
                     }
                 }
+            },
+            "icon": {
+                "label": "__icon_label__",
+                "helper": "__icon_helper__",
+                "optionLabels": ["__icon_default__","__icon_blind__","__icon_window__","__icon_dimmer__"]
             },
             "report": {
                 "label": "__report_label__",
