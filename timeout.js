@@ -3,6 +3,13 @@ function TimeoutManager(scope) {
     self.scope = scope;
 }
 TimeoutManager.prototype.timeouts = {};
+TimeoutManager.prototype.running  = function(id) {
+    var self   = this;
+    if (typeof(self.timeouts[id]) === "undefined") {
+        return false;
+    }
+    return ! self.timeouts[id].cleared;
+};
 TimeoutManager.prototype.add      = function(id,fn,interval) {
     var self   = this;
 
@@ -34,7 +41,7 @@ TimeoutManager.prototype.replace  = function(id,fn,interval) {
     for(var i = 0; i < args.length; ++i) {
         args[i] = arguments[i+1];
     }
-    args.unshift(self.scope);
+    args.unshift(self.scope,self.scope);
 
     return self.timeouts[id] = new(Function.prototype.bind.apply(Timeout,args));
 };
