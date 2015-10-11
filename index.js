@@ -26,24 +26,34 @@ DeviceMove.prototype.init = function (config) {
     DeviceMove.super_.prototype.init.call(this, config);
     var self = this;
     
-    self.virtualDevices = {};
-    self.callbacks = {};
-    self.timers = {};
+    executeFile("modules/DeviceMove/timeout.js");
     
-    self.statusId = "DeviceMove_" + self.id;
-    self.status = loadObject(self.statusId) || {};
+    self.virtualDevices = {};
+    self.callbacks      = {};
+    self.delay          = new TimeoutManager(self);
+    self.lock           = new TimeoutManager(self);
+    self.statusId       = "DeviceMove_" + self.id;
+    self.status         = loadObject(self.statusId) || {};
+    self.timer          = setInterval(
+        _.bind(self.pollDevices,self), 
+        15*60*1000
+    );
     
     setTimeout(_.bind(self.initCallback,self),10000);
-    self.timer = setInterval(_.bind(self.pollDevices,self), 10*60*1000);
 };
 
 DeviceMove.prototype.initCallback = function() {
     var self = this;
     
+    var icon = self.config.icon;
+    
     _.each(self.config.devices,function(deviceEntry) {
         var deviceId    = deviceEntry.device;
         var realDevice  = self.controller.devices.get(deviceId);
-        var icon        = realDevice.get('metrics:icon') || "blinds";
+        var deviceIcon;
+        if (icon === 'default') {
+            deviceIcon  = realDevice.get('metrics:icon');
+        }
         
         // Create virtual device
         var virtualDevice = this.controller.devices.create({
@@ -54,22 +64,39 @@ DeviceMove.prototype.initCallback = function() {
                 deviceType: 'switchMultilevel',
                 metrics: {
                     title: realDevice.get('metrics:title')+"VIRT",
-                    icon: icon
+                    icon: deviceIcon
                 }
             },
             overlay: {
                 deviceType: 'switchMultilevel'
             },
             handler: function(command,args) {
+                console.log('>>> COMMAND:'+command);
                 if (command === 'update') {
                     return;
                 }
-                if (typeof(self.timers[deviceId]) !== 'undefined') {
-                    clearTimeout(self.timers[deviceId]);
+                var level;
+                if (command === 'on' || command === 'up' || command === 'startUp') {
+                    level = 99;
+                } else if (command === 'off'|| command === 'down' || command === 'startDown') {
+                    level = 0;
+                } else if ("exact" === command || "exactSmooth" === command) {
+                    level = args.level;
+                } else if ("increase" === command) {
+                    level = self.status[deviceId];
+                    level = level + 10;
+                } else if ("decrease" === command) {
+                    level = self.status[deviceId];
+                    level = level - 10;
                 }
-                self.timers[deviceId] = setTimeout(
-                    _.bind(self.moveDevice,self,deviceId,command,args.level),
-                    1000*2
+                // TODO: Handle stop
+                
+                self.delay.replace(
+                    deviceId,
+                    self.moveDevice,
+                    1000*2,
+                    deviceId,
+                    level
                 );
             },
             moduleId: self.id
@@ -80,10 +107,9 @@ DeviceMove.prototype.initCallback = function() {
         // Hide real device
         // realDevice.set('visibility',false);
         
-        // Init level
+        // Init level from storage
         if (typeof(self.status[deviceId]) !== 'undefined') {
-            console.log('>>>INIT'+deviceId+' FROM STORAGE');
-            virtualDevice.set('metrics:level',self.status[deviceId]);
+            self.setStatus(deviceId,self.status[deviceId]);
         }
         
         // Build, register and call check callback
@@ -96,8 +122,6 @@ DeviceMove.prototype.initCallback = function() {
 
 DeviceMove.prototype.stop = function() {
     var self = this;
-    // Save status
-    saveObject(self.statusId,self.status);
     
     DeviceMove.super_.prototype.stop.call(this);
     
@@ -108,10 +132,17 @@ DeviceMove.prototype.stop = function() {
     
     // Remove callbacks
     _.each(self.callbacks,function(deviceId,callbackFunction) {
-        var device  = self.controller.devices.get(deviceId);
-        device.off('change:metrics:level',callbackFunction);
+        console.log('>>>>'+deviceId);
+        var device = self.controller.devices.get(deviceId);
+        if (typeof(device) !== 'undefined') {
+            device.off('change:metrics:level',callbackFunction);
+        }
     });
     
+    self.delay.clearAll();
+    self.lock.clearAll();
+    
+    self.delay = undefined;
     self.virtualDevices = {};
     self.callbacks = {};
 };
@@ -120,13 +151,49 @@ DeviceMove.prototype.stop = function() {
 // --- Module methods
 // ----------------------------------------------------------------------------
 
-DeviceMove.prototype.moveDevice = function(deviceId,command,level) {
+DeviceMove.prototype.setStatus = function(deviceId,level) {
+    var self            = this;
+    var virtualDevice   = self.virtualDevices[deviceId];
+    level               = parseInt(level);
+    
+    if (level > 99) {
+        level = 99;
+    }
+    
+    // Save status
+    if (self.status[deviceId] !== level) {
+        console.log('>>>>>> SET NEW LEVEL'+level);
+        self.status[deviceId] = level;
+        saveObject(self.statusId,self.status);
+    }
+    
+    // Set virtual device
+    virtualDevice.set('metrics:level',level);
+    if (self.config.icon === 'window') {
+        var status
+        if (level === 0) {
+            status = 'down';
+        } else if (level >= 99) {
+            status = 'up';
+        } else {
+            status = 'half';
+        }
+        virtualDevice.set('metrics:icon',"/ZAutomation/api/v1/load/modulemedia/DeviceMove/window-"+status+".png");
+    }
+    };
+
+DeviceMove.prototype.moveDevice = function(deviceId,level) {
     var self            = this;
     
-    // TODO check paralell movement 
-    
-    if (typeof(self.timers[deviceId]) !== 'undefined') {
-        clearTimeout(self.timers[deviceId]);
+    // Check if already running
+    if (self.lock.running(deviceId)) {
+        self.delay.replace(
+            deviceId,
+            self.moveDevice,
+            1000*5,
+            deviceId,
+            level
+        );
     }
     
     var virtualDevice   = self.virtualDevices[deviceId];
@@ -141,17 +208,42 @@ DeviceMove.prototype.moveDevice = function(deviceId,command,level) {
     var moveCommand     = undefined;
     var newLevel        = parseInt(level);
     
-    //instance = this.zway.devices[nodeId].instances[instanceId],
-    //instanceCommandClasses = Object.keys(instance.commandClasses).map(function(x) { return parseInt(x); }),
-    //cc = instance.commandClasses[commandClassId],
+    // Check related devices
+    if (self.config.relatedCheck
+        && typeof(deviceEntry.relatedDevice) !== undefined) {
+        var relatedDevice   = self.controller.devices.get(deviceEntry.relatedDevice);
+        var relatedLevel    = relatedDevice.get('metrics:level');
+        if (self.config.relatedDeviceComparison === 'gt'
+            && relatedLevel > self.config.relatedDeviceLimit) {
+            newLevel = Math.min(newLevel,self.config.deviceLimit);
+        } else if (self.config.relatedDeviceComparison === 'lt'
+            && relatedLevel < self.config.relatedDeviceLimit) {
+            newLevel = Math.max(newLevel,self.config.deviceLimit);
+        }
+    }
     
-    if (command === 'on' || command === 'up' || (command === 'exact' && level === 99)) {
+    if (newLevel >= 99) {
         moveCommand = 'upMax';
         newLevel = 99;
-    } else if (command === 'off'|| command === 'down' || (command === 'exact' && level === 0)) {
+        self.lock.add(
+            deviceId,
+            self.checkDevice,
+            (deviceTime*2*1000),
+            deviceId
+        );
+        realDevice.set('metrics:level',254);
+    } else if (newLevel <= 0) {
         moveCommand = 'down';
         newLevel = 0;
-    } else if (command === 'exact') {
+        self.lock.add(
+            deviceId,
+            self.checkDevice,
+            (deviceTime*2*1000),
+            deviceId
+        );
+        realDevice.set('metrics:level',0);
+    } else {
+        console.log('>>>MOVE DEVICE FROM '+oldLevel+' TO '+newLevel);
         var diffLevel = Math.abs(oldLevel - newLevel);
         if (diffLevel <= 5) {
             return;
@@ -161,72 +253,95 @@ DeviceMove.prototype.moveDevice = function(deviceId,command,level) {
         diffLevel       = Math.abs(diffTime / stepTime);
         newLevel        = (oldLevel < newLevel) ? oldLevel + diffLevel : oldLevel - diffLevel;
         
-        setTimeout(
-            _.bind(self.stopDevice,self,deviceId),
-            (diffTime * 1000)
+        self.lock.add(
+            deviceId,
+            self.stopDevice,
+            (diffTime * 1000),
+            deviceId
         );
-        console.log('>>> RUN FOR '+diffTime);
+        
+        console.log('>>>MOVE DEVICE'+deviceId+' FOR '+diffTime);
     }
     
-    console.log('>>> RUN'+moveCommand);
+    console.log('>>>MOVE DEVICE'+deviceId+' WITH '+moveCommand);
     realDevice.performCommand(moveCommand);
 
     // Set status
     virtualDevice.set('metrics:level',newLevel);
-    self.status[deviceId] = newLevel;
     
-    // Save status
-    saveObject(self.statusId,self.status);
+    self.setStatus(deviceId,newLevel);
 };
 
 DeviceMove.prototype.stopDevice = function(deviceId) {
     var self        = this;
     var device      = self.controller.devices.get(deviceId);
+    console.log('>>>STOP DEVICE');
+    self.lock.add(
+        deviceId,
+        self.checkDevice,
+        (5*1000),
+        deviceId
+    );
     device.performCommand("stop");
 };
 
 DeviceMove.prototype.pollDevices = function() {
     var self = this;
-    
     _.each(self.config.devices,function(deviceEntry) {
-        var device =  self.controller.devices.get(deviceEntry.device);
-        var updateTime = device.get('updateTime');
-        // TODO 
-        //device.performCommand("update");
+        self.pollDevice(deviceEntry.device);
     });
+};
+
+DeviceMove.prototype.pollDevice = function(deviceId) {
+    var self = this;
+    
+    var pollInterval    = 10*60*1000;
+    var currentTime     = Math.floor(new Date().getTime() / 1000);
+    var device          =  self.controller.devices.get(deviceId);
+    var updateTime      = device.get('updateTime');
+    if ((updateTime + pollInterval) < currentTime) {
+        cosole.log('>>>POLL')
+        device.performCommand("update");
+    }
 };
 
 DeviceMove.prototype.checkDevice = function(deviceId,args) {
     var self            = this;
+    
+    console.logJS(self.lock);
+    if (self.lock.running(deviceId)) {
+        console.log('>>>CHECK DEVICE IGNORE');
+        return;
+    }
+    
     var realDevice      = self.controller.devices.get(deviceId);
     var virtualDevice   = self.virtualDevices[deviceId];
     var realLevel       = parseInt(realDevice.get('metrics:level'));
     var virtualLevel    = parseInt(virtualDevice.get('metrics:level'));
     var setLevel        = undefined;
     
-    if ((self.config.report === 'open' || self.config.report === 'both')
-        && realLevel >= 99) {
-        setLevel = 99;
-    } else if ((self.config.report === 'close' || self.config.report === 'both')
-        && realLevel === 0) {
-        setLevel = 0;
-    }
-    
+    console.log('>>>CHECK DEVICE'+deviceId+' - '+realLevel);
+    console.logJS(args);
+    // Detect full open
+    if (self.config.report === 'open' && realLevel >= 99) {
+        console.log('>>>DETECT OPEN');
+        self.setStatus(deviceId,99);
+    // Detect full close
+    } else if (self.config.report === 'close' && realLevel === 0) {
+        console.log('>>>DETECT CLOSE');
+        self.setStatus(deviceId,0);
     // Init empty slot
-    if (typeof(self.status[deviceId]) === 'undefined') {
-        setLevel = realLevel;
-    }
-    
-    console.log('CHECK DEVICE'+setLevel);
-    console.logJS(realDevice);
-    
-    // Set new level
-    if (typeof(setLevel) !== 'undefined' 
-        && setLevel !== self.status[deviceId]) {
-        self.status[deviceId] = setLevel;
-        
-        // Save status
-        saveObject(self.statusId,self.status);
+    } else if (typeof(self.status[deviceId]) === 'undefined') {
+        console.log('>>>FIRST INIT '+realLevel);
+        self.setStatus(deviceId,realLevel);
+    // Correct partial open
+    } else if (self.config.report === 'close' && realLevel > 0 && self.status[deviceId] === 0) {
+        console.log('>>>DETECT MISMATCH OPEN '+realLevel);
+        self.setStatus(deviceId,realLevel);
+    // Correct partial close
+    } else if (self.config.report === 'open' && realLevel === 0 && self.status[deviceId] >= 99) {
+        console.log('>>>DETECT MISMATCH CLOSE '+realLevel);
+        self.setStatus(deviceId,realLevel);
     }
     
     // Set update time
