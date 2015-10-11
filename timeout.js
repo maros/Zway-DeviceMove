@@ -1,6 +1,7 @@
 function TimeoutManager(scope) {
-    var self   = this;
-    self.scope = scope;
+    var self        = this;
+    self.scope      = scope;
+    self.timeouts   = {};
 }
 TimeoutManager.prototype.timeouts = {};
 TimeoutManager.prototype.running  = function(id) {
@@ -25,8 +26,8 @@ TimeoutManager.prototype.add      = function(id,fn,interval) {
         args[i] = arguments[i+1];
     }
     args.unshift(self.scope,self.scope);
-    
-    return self.timeouts[id] = new(Function.prototype.bind.apply(Timeout,args));
+    self.timeouts[id] = new(Function.prototype.bind.apply(Timeout,args));
+    return self.timeouts[id];
 };
 TimeoutManager.prototype.replace  = function(id,fn,interval) {
     var self   = this;
@@ -42,8 +43,8 @@ TimeoutManager.prototype.replace  = function(id,fn,interval) {
         args[i] = arguments[i+1];
     }
     args.unshift(self.scope,self.scope);
-
-    return self.timeouts[id] = new(Function.prototype.bind.apply(Timeout,args));
+    self.timeouts[id] = new(Function.prototype.bind.apply(Timeout,args));
+    return self.timeouts[id];
 };
 TimeoutManager.prototype.clear    = function(id) {
     var self   = this;
@@ -57,7 +58,7 @@ TimeoutManager.prototype.clear    = function(id) {
 TimeoutManager.prototype.clearAll = function() {
     var self   = this;
     for (var id in self.timeouts) {
-        if (timeout.hasOwnProperty(id) 
+        if (timeout.hasOwnProperty(id)  
             && typeof(self.timeouts[id]) !== "undefined") {
             self.timeouts[id].clear();
         }
@@ -74,8 +75,9 @@ function Timeout(scope,fn,interval) {
     }
     args.unshift(scope);
 
-    self.fn    = Function.prototype.bind.apply(fn,args);
-    self.id    = setTimeout(self.run.bind(self),interval);
+    self.fn     = Function.prototype.bind.apply(fn,args);
+    self.id     = setTimeout(self.run.bind(self),interval);
+    self.cleared= false;
     //Register timeout by name?
 }
 
