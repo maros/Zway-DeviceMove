@@ -1,7 +1,6 @@
 {
     "title" : "Move blinds/windows to selected position",
-    "description" : "Move devices like windows or blinds based on timing information to a selected position." +
-        "This module can also ensure that two automation devices operating on the same physical object (ie. window opener and blinds motor mounted on the same window) do not interfere with eachother.",
+    "description" : "Move devices like windows or blinds based on timing information to a selected position.This module can also ensure that two automation devices operating on the same physical object (ie. window opener and blinds motor mounted on the same window) do not interfere with eachother.",
    "devices_label" : "Devices",
    "icon_helper" : "Select the icon to be used for the virtual devices",
    "icon_blind" : "Blind",
