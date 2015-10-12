@@ -40,7 +40,7 @@
                         "relatedDevice": {
                             "field": "enum",
                             "datasource": "namespaces",
-                            "enum": "namespaces:devices_switchMultilevel:deviceName",
+                            "enum": "namespaces:devices_switchMultilevel:deviceName,namespaces:devices_sensorMultilevel:deviceName",
                             "required": false
                         }
                     }
@@ -105,7 +105,7 @@
                                 "type": "select",
                                 "datasource": "namespaces",
                                 "field": "optionLabels",
-                                "optionLabels": "namespaces:devices_switchMultilevel:deviceName"
+                                "optionLabels": "namespaces:devices_switchMultilevel:deviceName,namespaces:devices_sensorMultilevel:deviceName"
                             }
                         }
                     }
