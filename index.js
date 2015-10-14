@@ -50,24 +50,27 @@ DeviceMove.prototype.initCallback = function() {
     _.each(self.config.devices,function(deviceEntry) {
         var deviceId    = deviceEntry.device;
         var realDevice  = self.controller.devices.get(deviceId);
-        var deviceIcon;
+        var deviceIcon  = icon
+        var probeTitle  = icon;
         if (icon === 'default') {
             deviceIcon  = realDevice.get('metrics:icon');
+            probeTitle  = realDevice.get('metrics:probeTitle');
         }
         
         // Create virtual device
         var virtualDevice = this.controller.devices.create({
             deviceId: "DeviceMove_" + self.id+'_'+deviceId,
-            location: realDevice.get('location'),
-            tags: realDevice.get('tags'),
             defaults: {
                 deviceType: 'switchMultilevel',
                 metrics: {
+                    probeTitle: probeTitle,
                     title: realDevice.get('metrics:title')+"VIRT",
                     icon: deviceIcon
                 }
             },
             overlay: {
+                location: realDevice.get('location'),
+                tags: realDevice.get('tags'),
                 deviceType: 'switchMultilevel'
             },
             handler: function(command,args) {
@@ -179,7 +182,7 @@ DeviceMove.prototype.setStatus = function(deviceId,level) {
         }
         virtualDevice.set('metrics:icon',"/ZAutomation/api/v1/load/modulemedia/DeviceMove/window-"+status+".png");
     }
-    };
+};
 
 DeviceMove.prototype.moveDevice = function(deviceId,level) {
     var self            = this;
