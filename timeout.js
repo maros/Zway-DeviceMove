@@ -81,19 +81,19 @@ function Timeout(scope,fn,interval) {
     //Register timeout by name?
 }
 
-Timeout.prototype.id       = null;
+Timeout.prototype.id       = undefined;
 Timeout.prototype.cleared  = false;
-Timeout.prototype.fn       = null;
+Timeout.prototype.fn       = undefined;
 Timeout.prototype.run      = function() {
     this.clear();
     this.fn();
 };
 Timeout.prototype.clear    = function() {
-    if (typeof(this.id) !== 'null' && this.cleared == false) {
+    if (typeof(this.id) !== 'undefined' && this.cleared == false) {
         clearTimeout(this.id);
     }
     this.cleared = true;
-    this.id = null;
+    this.id = undefined;
 };
 
 
