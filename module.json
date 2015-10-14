@@ -119,7 +119,7 @@
             "report": {
                 "label": "__report_label__",
                 "helper": "__report_helper__",
-                "optionLabels": ["__report_label_open__","__report_label_close__","__report_label_both__","__report_label_none__"]
+                "optionLabels": ["__report_label_open__","__report_label_close__","__report_label_none__"]
             },
             "relatedCheck": {
                 "type": "checkbox",

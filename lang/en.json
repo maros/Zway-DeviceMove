@@ -1,7 +1,7 @@
 {
    "description" : "Move devices like windows or blinds based on timing information to a selected position.This module can also ensure that two automation devices operating on the same physical object (ie. window opener and blinds motor mounted on the same window) do not interfere with eachother.",
-   "device_limit_helper" : "This device limit",
-   "device_limit_label" : "MISSING",
+   "device_limit_helper" : "Device limit for this device",
+   "device_limit_label" : "Device limit",
    "devices_label" : "Devices",
    "icon_blind" : "Blind",
    "icon_default" : "Default (Take from device)",
@@ -18,7 +18,6 @@
    "related_device_limit_label" : "Related device limit",
    "report_helper" : "Sensor that reports the correct device state",
    "report_label" : "Device report",
-   "report_label_both" : "MISSING",
    "report_label_close" : "When fully closed",
    "report_label_none" : "None",
    "report_label_open" : "When fully opened",
