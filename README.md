@@ -5,8 +5,8 @@ position.
 
 Some devices cannot be set to a specific position, but only can be controlled
 by moving them up or down. This module tries to circumvent this limitation by
-creating a virtual device instead of the original device, that translates the
-user-select position into timing information.
+creating a virtual multilevel Switch device instead of the original device, 
+that translates the user-select position into timing information.
 
 For example if a device usually takes 40 seconds to move from fully closed to
 fully opened state, then moving the device to 50% requires sending the 
