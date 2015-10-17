@@ -64,7 +64,7 @@ DeviceMove.prototype.initCallback = function() {
             probeTitle  = realDevice.get('metrics:probeTitle');
         }
         
-        title = title.replace(/\s+\[raw\]\s+/,"");
+        title = title.replace(/\s*\[raw\]\s*/,"");
         
         // Hide and rename device
         realDevice.set('metrics:title',title+' [raw]');
