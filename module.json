@@ -6,7 +6,7 @@
     "homepage": "http://k-1.com",
     "icon": "icon.png",
     "moduleName": "DeviceMove",
-    "version": "1.0.0",
+    "version": "1.00",
     "maturity": "stable",
     "repository": {
         "type": "git",
