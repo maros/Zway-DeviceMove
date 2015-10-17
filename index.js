@@ -80,7 +80,6 @@ DeviceMove.prototype.initCallback = function() {
                 deviceType: 'switchMultilevel'
             },
             handler: function(command,args) {
-                //console.log('>>> COMMAND:'+command);
                 if (command === 'update') {
                     return;
                 }
@@ -98,7 +97,7 @@ DeviceMove.prototype.initCallback = function() {
                     level = self.status[deviceId];
                     level = level - 10;
                 }
-                // TODO: Handle stop
+                console.log('[DeviceMove] Got command '+command+' for '+deviceId+': Set to '+level);
                 
                 self.delay.replace(
                     deviceId,
@@ -170,7 +169,6 @@ DeviceMove.prototype.setStatus = function(deviceId,level) {
     
     // Save status
     if (self.status[deviceId] !== level) {
-        //console.log('>>>>>> SET NEW LEVEL'+level);
         self.status[deviceId] = level;
         saveObject(self.statusId,self.status);
     }
@@ -267,10 +265,9 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
             deviceId
         );
         
-        //console.log('>>>MOVE DEVICE FROM '+oldLevel+' TO '+newLevel FOR '+diffTime);
+        console.log('[DeviceMove] Move device '+deviceId+' from '+oldLevel+' to '+newLevel+' for '+diffTime+' seconds');
     }
     
-    //console.log('>>>MOVE DEVICE'+deviceId+' WITH '+moveCommand);
     realDevice.performCommand(moveCommand);
 
     // Set status
@@ -282,7 +279,6 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
 DeviceMove.prototype.stopDevice = function(deviceId) {
     var self        = this;
     var device      = self.controller.devices.get(deviceId);
-    //console.log('>>>STOP DEVICE');
     self.lock.add(
         deviceId,
         self.checkDevice,
@@ -307,7 +303,6 @@ DeviceMove.prototype.pollDevice = function(deviceId) {
     var device          =  self.controller.devices.get(deviceId);
     var updateTime      = device.get('updateTime');
     if ((updateTime + pollInterval) < currentTime) {
-        //cosole.log('>>>POLL')
         device.performCommand("update");
     }
 };
@@ -315,9 +310,7 @@ DeviceMove.prototype.pollDevice = function(deviceId) {
 DeviceMove.prototype.checkDevice = function(deviceId,args) {
     var self            = this;
     
-    console.logJS(self.lock);
     if (self.lock.running(deviceId)) {
-        //console.log('>>>CHECK DEVICE IGNORE');
         return;
     }
     
@@ -327,27 +320,22 @@ DeviceMove.prototype.checkDevice = function(deviceId,args) {
     var virtualLevel    = parseInt(virtualDevice.get('metrics:level'));
     var setLevel        = undefined;
     
-    //console.log('>>>CHECK DEVICE'+deviceId+' - '+realLevel);
-    console.logJS(args);
     // Detect full open
     if (self.config.report === 'open' && realLevel >= 99) {
-        //console.log('>>>DETECT OPEN');
         self.setStatus(deviceId,99);
     // Detect full close
     } else if (self.config.report === 'close' && realLevel === 0) {
-        //console.log('>>>DETECT CLOSE');
         self.setStatus(deviceId,0);
     // Init empty slot
     } else if (typeof(self.status[deviceId]) === 'undefined') {
-        //console.log('>>>FIRST INIT '+realLevel);
         self.setStatus(deviceId,realLevel);
     // Correct partial open
     } else if (self.config.report === 'close' && realLevel > 0 && self.status[deviceId] === 0) {
-        //console.log('>>>DETECT MISMATCH OPEN '+realLevel);
+        console.log('[DeviceMove] Detected status mismatch for '+deviceId+'. Now closed');
         self.setStatus(deviceId,realLevel);
     // Correct partial close
     } else if (self.config.report === 'open' && realLevel === 0 && self.status[deviceId] >= 99) {
-        //console.log('>>>DETECT MISMATCH CLOSE '+realLevel);
+        console.log('[DeviceMove] Detected status mismatch for '+deviceId+'. Now opened');
         self.setStatus(deviceId,realLevel);
     }
     
