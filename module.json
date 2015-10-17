@@ -48,7 +48,7 @@
             },
             "icon": {
                 "type": "select",
-                "enum": ["default","blind", "window","dimmer"],
+                "enum": ["default","blind", "window","multilevel"],
                 "required": true
             },
             "report": {
@@ -114,7 +114,7 @@
             "icon": {
                 "label": "__icon_label__",
                 "helper": "__icon_helper__",
-                "optionLabels": ["__icon_default__","__icon_blind__","__icon_window__","__icon_dimmer__"]
+                "optionLabels": ["__icon_default__","__icon_blind__","__icon_window__","__icon_multilevel__"]
             },
             "report": {
                 "label": "__report_label__",

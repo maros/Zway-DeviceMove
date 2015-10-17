@@ -5,7 +5,7 @@
    "devices_label" : "Devices",
    "icon_blind" : "Blind",
    "icon_default" : "Default (Take from device)",
-   "icon_dimmer" : "Dimmer",
+   "icon_multilevel" : "Dimmer",
    "icon_helper" : "Select the icon to be used for the virtual devices",
    "icon_label" : "Icon",
    "icon_window" : "Window",
