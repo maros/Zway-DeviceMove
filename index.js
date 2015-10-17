@@ -58,10 +58,17 @@ DeviceMove.prototype.initCallback = function() {
         var realDevice  = self.controller.devices.get(deviceId);
         var deviceIcon  = icon
         var probeTitle  = icon;
+        var title       = realDevice.get('metrics:title');
         if (icon === 'default') {
             deviceIcon  = realDevice.get('metrics:icon');
             probeTitle  = realDevice.get('metrics:probeTitle');
         }
+        
+        title = title.replace(/\s+\[raw\]\s+/,"");
+        
+        // Hide and rename device
+        realDevice.set('metrics:title',title+' [raw]');
+        realDevice.set('visibility',false);
         
         // Create virtual device
         var virtualDevice = this.controller.devices.create({
@@ -70,7 +77,7 @@ DeviceMove.prototype.initCallback = function() {
                 deviceType: 'switchMultilevel',
                 metrics: {
                     probeTitle: probeTitle,
-                    title: realDevice.get('metrics:title')+"VIRT",
+                    title: title,
                     icon: deviceIcon
                 }
             },
@@ -111,9 +118,7 @@ DeviceMove.prototype.initCallback = function() {
         });
         
         self.virtualDevices[deviceId] = virtualDevice;
-        
-        // Hide real device
-        // realDevice.set('visibility',false);
+
         
         // Init level from storage
         if (typeof(self.status[deviceId]) !== 'undefined') {
@@ -134,24 +139,30 @@ DeviceMove.prototype.stop = function() {
     DeviceMove.super_.prototype.stop.call(this);
     
     // Remove device
-    _.each(self.virtualDevices,function(deviceId,deviceObject){
-        self.controller.devices.remove(deviceObject);
+    _.each(self.config.devices,function(deviceId){
+        self.controller.devices.remove(self.virtualDevices[deviceId]);
     });
     
     // Remove callbacks
-    _.each(self.callbacks,function(deviceId,callbackFunction) {
+    _.each(self.config.devices,function(deviceId) {
         var device = self.controller.devices.get(deviceId);
         if (typeof(device) !== 'undefined') {
-            device.off('change:metrics:level',callbackFunction);
+            device.off('change:metrics:level',self.callbacks[deviceId]);
         }
     });
+    
+    if (typeof(self.timer) !== 'undefined') {
+        clearTimeout(self.timer);
+    }
     
     self.delay.clearAll();
     self.lock.clearAll();
     
-    self.delay = undefined;
+    self.timer          = undefined;
+    self.delay          = undefined;
+    self.lock           = undefined;
     self.virtualDevices = {};
-    self.callbacks = {};
+    self.callbacks      = {};
 };
 
 // ----------------------------------------------------------------------------
@@ -196,10 +207,11 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
         self.delay.replace(
             deviceId,
             self.moveDevice,
-            1000*5,
+            (1000*15),
             deviceId,
             level
         );
+        return;
     }
     
     var virtualDevice   = self.virtualDevices[deviceId];
@@ -229,7 +241,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
     }
     
     if (newLevel >= 99) {
-        moveCommand = 'upMax';
+        moveCommand = 'on';
         newLevel = 99;
         self.lock.add(
             deviceId,
@@ -239,7 +251,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
         );
         realDevice.set('metrics:level',254);
     } else if (newLevel <= 0) {
-        moveCommand = 'down';
+        moveCommand = 'off';
         newLevel = 0;
         self.lock.add(
             deviceId,
