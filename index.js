@@ -12,6 +12,14 @@ Description:
 function DeviceMove (id, controller) {
     // Call superconstructor first (AutomationModule)
     DeviceMove.super_.call(this, id, controller);
+    
+    this.virtualDevices = {};
+    this.callbacks      = {};
+    this.delay          = undefined;
+    this.lock           = undefined;
+    this.statusId       = undefined;
+    this.status         = undefined;
+    this.timer          = undefined;
 }
 
 inherits(DeviceMove, AutomationModule);
@@ -28,8 +36,6 @@ DeviceMove.prototype.init = function (config) {
     
     executeFile("modules/DeviceMove/timeout.js");
     
-    self.virtualDevices = {};
-    self.callbacks      = {};
     self.delay          = new TimeoutManager(self);
     self.lock           = new TimeoutManager(self);
     self.statusId       = "DeviceMove_" + self.id;
