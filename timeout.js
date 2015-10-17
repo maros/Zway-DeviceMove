@@ -9,7 +9,7 @@ TimeoutManager.prototype.running  = function(id) {
     if (typeof(self.timeouts[id]) === "undefined") {
         return false;
     }
-    return ! self.timeouts[id].cleared;
+    return self.timeouts[id].cleared ? false:true;
 };
 TimeoutManager.prototype.add      = function(id,fn,interval) {
     var self   = this;
@@ -17,7 +17,7 @@ TimeoutManager.prototype.add      = function(id,fn,interval) {
     // Do not overwrite existing timer
     if (typeof(self.timeouts[id]) !== "undefined"
         && self.timeouts[id].cleared === false) {
-        throw('Timeout '+id+' is already active');
+        throw('Timeout "'+id+'" is already active');
     }
 
     // Build args
@@ -45,6 +45,9 @@ TimeoutManager.prototype.replace  = function(id,fn,interval) {
     args.unshift(self.scope,self.scope);
     self.timeouts[id] = new(Function.prototype.bind.apply(Timeout,args));
     return self.timeouts[id];
+};
+TimeoutManager.prototype.get    = function(id) {
+    return this.timeouts[id]
 };
 TimeoutManager.prototype.clear    = function(id) {
     var self   = this;
@@ -89,11 +92,12 @@ Timeout.prototype.run      = function() {
     this.fn();
 };
 Timeout.prototype.clear    = function() {
-    if (typeof(this.id) !== 'undefined' && this.cleared == false) {
-        clearTimeout(this.id);
+    var self   = this;
+    if (typeof(self.id) !== 'undefined' && self.cleared == false) {
+        clearTimeout(self.id);
     }
-    this.cleared = true;
-    this.id = undefined;
+    self.cleared = true;
+    self.id = undefined;
 };
 
 
