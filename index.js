@@ -68,7 +68,7 @@ DeviceMove.prototype.initCallback = function() {
         
         // Hide and rename device
         realDevice.set('metrics:title',title+' [raw]');
-        realDevice.set('visibility',false);
+        realDevice.set('permanentlyHidden',true);
         
         // Create virtual device
         var virtualDevice = this.controller.devices.create({
@@ -119,7 +119,6 @@ DeviceMove.prototype.initCallback = function() {
         });
         
         self.virtualDevices[deviceId] = virtualDevice;
-
         
         // Init level from storage
         if (typeof(self.status[deviceId]) !== 'undefined') {
@@ -139,15 +138,21 @@ DeviceMove.prototype.stop = function() {
     
     DeviceMove.super_.prototype.stop.call(this);
     
-    // Remove device
+    // Remove device & callbacks
     _.each(self.config.devices,function(deviceId){
-        self.controller.devices.remove(self.virtualDevices[deviceId]);
-    });
-    
-    // Remove callbacks
-    _.each(self.config.devices,function(deviceId) {
-        var device = self.controller.devices.get(deviceId);
-        if (typeof(device) !== 'undefined') {
+        var realDevice  = self.controller.devices.get(deviceId);
+        var virtualDevice = self.controller.devices.get(self.virtualDevices[deviceId]);
+        
+        var title       = realDevice.get('metrics:title');
+        title = title.replace(/\s*\[raw\]\s*/,"");
+        realDevice.set('metrics:title',title);
+        realDevice.set('permanentlyHidden',true);
+        
+        if (typeof(virtualDevice) !== 'undefined') {
+            self.controller.devices.remove(virtualDevice);
+        }
+        
+        if (typeof(realDevice) !== 'undefined') {
             device.off('change:metrics:level',self.callbacks[deviceId]);
         }
     });
