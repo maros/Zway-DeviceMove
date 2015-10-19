@@ -65,6 +65,7 @@ DeviceMove.prototype.initCallback = function() {
         // Hide and rename device
         realDevice.set('metrics:title',title+' [raw]');
         realDevice.set('permanently_hidden',true);
+        realDevice.set('visibility',false);
         
         // Create virtual device
         var virtualDevice = this.controller.devices.create({
@@ -137,7 +138,8 @@ DeviceMove.prototype.stop = function() {
         var title       = realDevice.get('metrics:title');
         title = title.replace(/\s*\[raw\]\s*/,"");
         realDevice.set('metrics:title',title);
-        realDevice.set('permanently_hidden',true);
+        realDevice.set('permanently_hidden',false);
+        realDevice.set('visibility',true);
         
         if (typeof(virtualDevice) !== 'undefined') {
             self.controller.devices.remove(virtualDevice);
