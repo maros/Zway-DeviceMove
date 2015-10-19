@@ -77,6 +77,7 @@ DeviceMove.prototype.initCallback = function() {
                 deviceType: 'switchMultilevel',
                 metrics: {
                     probeTitle: probeTitle,
+                    probeType: 'blind',
                     title: title,
                     icon: deviceIcon
                 }
