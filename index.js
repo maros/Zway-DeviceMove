@@ -52,6 +52,10 @@ DeviceMove.prototype.initCallback = function() {
     _.each(self.config.devices,function(deviceEntry) {
         var deviceId    = deviceEntry.device;
         var realDevice  = self.controller.devices.get(deviceId);
+        if (realDevice == null) {
+            console.error('[DevceMove] Device not found '+deviceId);
+            return;
+        }
         var deviceIcon  = icon
         var probeTitle  = icon;
         var title       = realDevice.get('metrics:title');
@@ -133,6 +137,9 @@ DeviceMove.prototype.stop = function() {
     // Remove device & callbacks
     _.each(self.config.devices,function(deviceId){
         var realDevice  = self.controller.devices.get(deviceId);
+        if (realDevice == null) {
+            return;
+        }
         var virtualDevice = self.controller.devices.get(self.virtualDevices[deviceId]);
         
         var title       = realDevice.get('metrics:title');
@@ -223,13 +230,17 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
     if (self.config.relatedCheck
         && typeof(deviceEntry.relatedDevice) !== undefined) {
         var relatedDevice   = self.controller.devices.get(deviceEntry.relatedDevice);
-        var relatedLevel    = relatedDevice.get('metrics:level');
-        if (self.config.relatedDeviceComparison === 'gt'
-            && relatedLevel > self.config.relatedDeviceLimit) {
-            newLevel = Math.min(newLevel,self.config.deviceLimit);
-        } else if (self.config.relatedDeviceComparison === 'lt'
-            && relatedLevel < self.config.relatedDeviceLimit) {
-            newLevel = Math.max(newLevel,self.config.deviceLimit);
+        if (relatedDevice == null) {
+            console.error('[DevceMove] Related device not found '+deviceEntry.relatedDevice);
+        } else {
+            var relatedLevel    = relatedDevice.get('metrics:level');
+            if (self.config.relatedDeviceComparison === 'gt'
+                && relatedLevel > self.config.relatedDeviceLimit) {
+                newLevel = Math.min(newLevel,self.config.deviceLimit);
+            } else if (self.config.relatedDeviceComparison === 'lt'
+                && relatedLevel < self.config.relatedDeviceLimit) {
+                newLevel = Math.max(newLevel,self.config.deviceLimit);
+            }
         }
     }
     
