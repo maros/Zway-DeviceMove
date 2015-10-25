@@ -1,155 +1,179 @@
 {
-    "dependencies": [],
-    "singleton": true,
-    "category": "device_enhancements",
-    "author": "Maroš Kollár",
-    "homepage": "http://k-1.com",
-    "icon": "icon.png",
-    "moduleName": "DeviceMove",
-    "version": "1.00",
-    "maturity": "stable",
-    "repository": {
-        "type": "git",
-        "source": "https://github.com/maros/Zway-DeviceMove"
-    },
-    "defaults": {
-        "title": "__title__",
-        "description": "__description__",
-        "icon": "default"
-    },
-    "schema": {
-        "type": "object",
-        "properties": {
-            "devices": {
-                "required": true,
-                "type": "array",
-                "minItems": 1,
-                "items": {
-                    "type": "object",
-                    "required": true,
-                    "properties": {
-                        "device": {
-                            "field": "enum",
-                            "datasource": "namespaces",
-                            "enum": "namespaces:devices_switchMultilevel:deviceName",
-                            "required": true
-                        },
-                        "time": {
-                            "type": "number",
-                            "required": true
-                        },
-                        "relatedDevice": {
-                            "field": "enum",
-                            "datasource": "namespaces",
-                            "enum": "namespaces:devices_switchMultilevel:deviceName,namespaces:devices_sensorMultilevel:deviceName",
-                            "required": false
-                        }
-                    }
-                }
+   "author" : "Maroš Kollár",
+   "category" : "device_enhancements",
+   "defaults" : {
+      "description" : "__description__",
+      "icon" : "default",
+      "title" : "__title__"
+   },
+   "dependencies" : [],
+   "homepage" : "http://k-1.com",
+   "icon" : "icon.png",
+   "maturity" : "stable",
+   "moduleName" : "DeviceMove",
+   "options" : {
+      "fields" : {
+         "deviceLimit" : {
+            "dependencies" : {
+               "relatedCheck" : true
             },
-            "icon": {
-                "type": "select",
-                "enum": ["default","blind", "window","multilevel"],
-                "required": true
+            "helper" : "__device_limit_helper__",
+            "label" : "__device_limit_label__"
+         },
+         "devices" : {
+            "fields" : {
+               "item" : {
+                  "fields" : {
+                     "device" : {
+                        "datasource" : "namespaces",
+                        "field" : "optionLabels",
+                        "optionLabels" : "namespaces:devices_switchMultilevel:deviceName",
+                        "type" : "select"
+                     },
+                     "relatedDevice" : {
+                        "datasource" : "namespaces",
+                        "field" : "optionLabels",
+                        "label" : "__related_device_label__",
+                        "optionLabels" : "namespaces:devices_switchMultilevel:deviceName,namespaces:devices_sensorMultilevel:deviceName",
+                        "type" : "select"
+                     },
+                     "time" : {
+                        "helper" : "__time_helper__",
+                        "label" : "__time_label__"
+                     }
+                  }
+               }
             },
-            "report": {
-                "type": "select",
-                "enum": ["open", "close", "none"],
-                "required": true
+            "label" : "__devices_label__"
+         },
+         "icon" : {
+            "helper" : "__icon_helper__",
+            "label" : "__icon_label__",
+            "optionLabels" : [
+               "__icon_default__",
+               "__icon_blind__",
+               "__icon_window__",
+               "__icon_multilevel__"
+            ]
+         },
+         "relatedCheck" : {
+            "default" : false,
+            "helper" : "__related_check_helper__",
+            "label" : "__related_check_label__",
+            "type" : "checkbox"
+         },
+         "relatedDeviceComparison" : {
+            "dependencies" : {
+               "relatedCheck" : true
             },
-            "relatedCheck": {
-                "type": "boolean",
-                "required": true
+            "helper" : "__related_device_comparison_helper__",
+            "label" : "__related_device_comparison_label__",
+            "optionLabels" : [
+               ">",
+               "<"
+            ]
+         },
+         "relatedDeviceLimit" : {
+            "dependencies" : {
+               "relatedCheck" : true
             },
-            "relatedDeviceLimit": {
-                "type": "integer",
-                "dependencies": "relatedCheck",
-                "required": true,
-                "minimum": 0,
-                "maximum": 99
+            "helper" : "__related_device_limit_helper__",
+            "label" : "__related_device_limit_label__"
+         },
+         "report" : {
+            "helper" : "__report_helper__",
+            "label" : "__report_label__",
+            "optionLabels" : [
+               "__report_label_open__",
+               "__report_label_close__",
+               "__report_label_none__"
+            ]
+         }
+      }
+   },
+   "repository" : {
+      "source" : "https://github.com/maros/Zway-DeviceMove",
+      "type" : "git"
+   },
+   "schema" : {
+      "properties" : {
+         "deviceLimit" : {
+            "dependencies" : "relatedCheck",
+            "maximum" : 99,
+            "minimum" : 0,
+            "required" : true,
+            "type" : "integer"
+         },
+         "devices" : {
+            "items" : {
+               "properties" : {
+                  "device" : {
+                     "datasource" : "namespaces",
+                     "enum" : "namespaces:devices_switchMultilevel:deviceName",
+                     "field" : "enum",
+                     "required" : true
+                  },
+                  "relatedDevice" : {
+                     "datasource" : "namespaces",
+                     "enum" : "namespaces:devices_switchMultilevel:deviceName,namespaces:devices_sensorMultilevel:deviceName",
+                     "field" : "enum",
+                     "required" : false
+                  },
+                  "time" : {
+                     "required" : true,
+                     "type" : "number"
+                  }
+               },
+               "required" : true,
+               "type" : "object"
             },
-            "relatedDeviceComparison": {
-                "type": "select",
-                "enum": ["gt","lt"],
-                "dependencies": "relatedCheck",
-                "required": true
-            },
-            "deviceLimit": {
-                "type": "integer",
-                "dependencies": "relatedCheck",
-                "required": true,
-                "minimum": 0,
-                "maximum": 99
-            }
-        },
-        "required": true
-    },
-    "options": {
-        "fields": {
-            "devices": {
-                "label": "__devices_label__",
-                "fields": {
-                    "item": {
-                        "fields": {
-                            "device": {
-                                "type": "select",
-                                "datasource": "namespaces",
-                                "field": "optionLabels",
-                                "optionLabels": "namespaces:devices_switchMultilevel:deviceName"
-                            },
-                            "time": {
-                                "label": "__time_label__",
-                                "helper": "__time_helper__"
-                            },
-                            "relatedDevice": {
-                                "label": "__related_device_label__",
-                                "type": "select",
-                                "datasource": "namespaces",
-                                "field": "optionLabels",
-                                "optionLabels": "namespaces:devices_switchMultilevel:deviceName,namespaces:devices_sensorMultilevel:deviceName"
-                            }
-                        }
-                    }
-                }
-            },
-            "icon": {
-                "label": "__icon_label__",
-                "helper": "__icon_helper__",
-                "optionLabels": ["__icon_default__","__icon_blind__","__icon_window__","__icon_multilevel__"]
-            },
-            "report": {
-                "label": "__report_label__",
-                "helper": "__report_helper__",
-                "optionLabels": ["__report_label_open__","__report_label_close__","__report_label_none__"]
-            },
-            "relatedCheck": {
-                "type": "checkbox",
-                "label":"__related_check_label__",
-                "helper":"__related_check_helper__",
-                "default": false
-            },
-            "relatedDeviceLimit": {
-                "label": "__related_device_limit_label__",
-                "helper": "__related_device_limit_helper__",
-                "dependencies": {
-                    "relatedCheck": true
-                }
-            },
-            "relatedDeviceComparison": {
-                "label": "__related_device_comparison_label__",
-                "helper": "__related_device_comparison_helper__",
-                "optionLabels": [">","<"],
-                "dependencies": {
-                    "relatedCheck": true
-                }
-            },
-            "deviceLimit": {
-                "label": "__device_limit_label__",
-                "helper": "__device_limit_helper__",
-                "dependencies": {
-                    "relatedCheck": true
-                }
-            }
-        }
-    }
+            "minItems" : 1,
+            "required" : true,
+            "type" : "array"
+         },
+         "icon" : {
+            "enum" : [
+               "default",
+               "blind",
+               "window",
+               "multilevel"
+            ],
+            "required" : true,
+            "type" : "select"
+         },
+         "relatedCheck" : {
+            "required" : true,
+            "type" : "boolean"
+         },
+         "relatedDeviceComparison" : {
+            "dependencies" : "relatedCheck",
+            "enum" : [
+               "gt",
+               "lt"
+            ],
+            "required" : true,
+            "type" : "select"
+         },
+         "relatedDeviceLimit" : {
+            "dependencies" : "relatedCheck",
+            "maximum" : 99,
+            "minimum" : 0,
+            "required" : true,
+            "type" : "integer"
+         },
+         "report" : {
+            "enum" : [
+               "open",
+               "close",
+               "none"
+            ],
+            "required" : true,
+            "type" : "select"
+         }
+      },
+      "required" : true,
+      "type" : "object"
+   },
+   "singleton" : true,
+   "version" : "1.01"
 }
