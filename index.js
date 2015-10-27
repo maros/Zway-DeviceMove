@@ -3,7 +3,7 @@
 Version: 1.01
 (c) Maroš Kollár, 2015
 -----------------------------------------------------------------------------
-Author: maros@k-1.com <maros@k-1.com>
+Author: Maroš Kollár <maros@k-1.com>
 Description:
     Move devices to specified position based on timing information
 
@@ -249,7 +249,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
         newLevel = 99;
         self.lock.add(
             deviceId,
-            self.checkDevice,
+            self.pollDevice,
             (deviceTime*2*1000),
             deviceId
         );
@@ -259,7 +259,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
         newLevel = 0;
         self.lock.add(
             deviceId,
-            self.checkDevice,
+            self.pollDevice,
             (deviceTime*2*1000),
             deviceId
         );
@@ -302,6 +302,7 @@ DeviceMove.prototype.stopDevice = function(deviceId) {
         deviceId
     );
     device.performCommand("stop");
+    self.pollDevice(deviceId);
 };
 
 DeviceMove.prototype.pollDevices = function() {
@@ -316,7 +317,10 @@ DeviceMove.prototype.pollDevice = function(deviceId) {
     
     var pollInterval    = 10*60*1000;
     var currentTime     = Math.floor(new Date().getTime() / 1000);
-    var device          =  self.controller.devices.get(deviceId);
+    var device          = self.controller.devices.get(deviceId);
+    if (typeof(device) === 'undefined') {
+        return;
+    }
     var updateTime      = device.get('updateTime');
     if ((updateTime + pollInterval) < currentTime) {
         device.performCommand("update");
