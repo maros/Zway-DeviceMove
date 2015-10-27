@@ -158,7 +158,7 @@ DeviceMove.prototype.stop = function() {
     });
     
     if (typeof(self.timer) !== 'undefined') {
-        clearTimeout(self.timer);
+        clearInterval(self.timer);
     }
     
     self.delay.clearAll();
