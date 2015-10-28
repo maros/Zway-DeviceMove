@@ -18,7 +18,8 @@
                "relatedCheck" : true
             },
             "helper" : "__device_limit_helper__",
-            "label" : "__device_limit_label__"
+            "label" : "__device_limit_label__",
+            "order": 7
          },
          "devices" : {
             "fields" : {
@@ -28,23 +29,27 @@
                         "datasource" : "namespaces",
                         "field" : "optionLabels",
                         "optionLabels" : "namespaces:devices_switchMultilevel:deviceName",
-                        "type" : "select"
+                        "type" : "select",
+                        "order": 1
                      },
                      "relatedDevice" : {
                         "datasource" : "namespaces",
                         "field" : "optionLabels",
                         "label" : "__related_device_label__",
                         "optionLabels" : "namespaces:devices_switchMultilevel:deviceName,namespaces:devices_sensorMultilevel:deviceName",
-                        "type" : "select"
+                        "type" : "select",
+                        "order": 3
                      },
                      "time" : {
                         "helper" : "__time_helper__",
-                        "label" : "__time_label__"
+                        "label" : "__time_label__",
+                        "order": 2
                      }
                   }
                }
             },
-            "label" : "__devices_label__"
+            "label" : "__devices_label__",
+            "order": 1
          },
          "icon" : {
             "helper" : "__icon_helper__",
@@ -54,13 +59,15 @@
                "__icon_blind__",
                "__icon_window__",
                "__icon_multilevel__"
-            ]
+            ],
+            "order": 2
          },
          "relatedCheck" : {
             "default" : false,
             "helper" : "__related_check_helper__",
             "label" : "__related_check_label__",
-            "type" : "checkbox"
+            "type" : "checkbox",
+            "order": 4
          },
          "relatedDeviceComparison" : {
             "dependencies" : {
@@ -71,14 +78,16 @@
             "optionLabels" : [
                ">",
                "<"
-            ]
+            ],
+            "order": 5
          },
          "relatedDeviceLimit" : {
             "dependencies" : {
                "relatedCheck" : true
             },
             "helper" : "__related_device_limit_helper__",
-            "label" : "__related_device_limit_label__"
+            "label" : "__related_device_limit_label__",
+            "order": 6
          },
          "report" : {
             "helper" : "__report_helper__",
@@ -87,7 +96,8 @@
                "__report_label_open__",
                "__report_label_close__",
                "__report_label_none__"
-            ]
+            ],
+            "order": 3
          }
       }
    },
