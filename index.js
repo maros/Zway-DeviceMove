@@ -153,7 +153,7 @@ DeviceMove.prototype.stop = function() {
         }
         
         if (typeof(realDevice) !== 'undefined') {
-            device.off('change:metrics:level',self.callbacks[deviceId]);
+            realDevice.off('change:metrics:level',self.callbacks[deviceId]);
         }
     });
     
@@ -294,14 +294,14 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
 
 DeviceMove.prototype.stopDevice = function(deviceId) {
     var self        = this;
-    var device      = self.controller.devices.get(deviceId);
+    var deviceObject      = self.controller.devices.get(deviceId);
     self.lock.add(
         deviceId,
         self.checkDevice,
         (5*1000),
         deviceId
     );
-    device.performCommand("stop");
+    deviceObject.performCommand("stop");
     self.pollDevice(deviceId);
 };
 
