@@ -148,11 +148,11 @@ DeviceMove.prototype.stop = function() {
         realDevice.set('permanently_hidden',false);
         realDevice.set('visibility',true);
         
-        if (typeof(virtualDevice) !== 'undefined') {
+        if (virtualDevice !== null) {
             self.controller.devices.remove(virtualDevice);
         }
         
-        if (typeof(realDevice) !== 'undefined') {
+        if (virtualDevice !== null) {
             realDevice.off('change:metrics:level',self.callbacks[deviceId]);
         }
     });
