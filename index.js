@@ -218,7 +218,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
     var oldLevel        = virtualDevice.get('metrics:level');
     var realDevice      = self.controller.devices.get(deviceId);
     var deviceEntry     = _.find(self.config.devices,function(deviceEntry) { return deviceEntry.device === deviceId; });
-    if (typeof(deviceEntry) === 'undefined') {
+    if (deviceEntry === null) {
         return;
     }
     var deviceTime      = parseInt(deviceEntry.time);
@@ -229,7 +229,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
     // Check related devices
     if (self.config.relatedCheck
         && typeof(deviceEntry.relatedDevice) !== undefined) {
-        var relatedDevice   = self.controller.devices.get(deviceEntry.relatedDevice);
+        var relatedDevice = self.controller.devices.get(deviceEntry.relatedDevice);
         if (relatedDevice == null) {
             console.error('[DevceMove] Related device not found '+deviceEntry.relatedDevice);
         } else {
@@ -317,13 +317,13 @@ DeviceMove.prototype.pollDevice = function(deviceId) {
     
     var pollInterval    = 10*60*1000;
     var currentTime     = Math.floor(new Date().getTime() / 1000);
-    var device          = self.controller.devices.get(deviceId);
-    if (typeof(device) === 'undefined') {
+    var deviceObject    = self.controller.devices.get(deviceId);
+    if (deviceObject === null) {
         return;
     }
-    var updateTime      = device.get('updateTime');
+    var updateTime      = deviceObject.get('updateTime');
     if ((updateTime + pollInterval) < currentTime) {
-        device.performCommand("update");
+        deviceObject.performCommand("update");
     }
 };
 
