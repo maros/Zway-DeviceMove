@@ -96,7 +96,7 @@ DeviceMove.prototype.initCallback = function() {
                 var currentLevel = this.get('metrics:level');
                 var newLevel;
                 if (command === 'on' || command === 'up' || command === 'startUp') {
-                    newLevel = 99;
+                    newLevel = 255;
                 } else if (command === 'off'|| command === 'down' || command === 'startDown') {
                     newLevel = 0;
                 } else if ("exact" === command || "exactSmooth" === command) {
@@ -180,8 +180,8 @@ DeviceMove.prototype.setStatus = function(deviceId,level) {
     var virtualDevice   = self.virtualDevices[deviceId];
     level               = parseInt(level);
     
-    if (level > 99) {
-        level = 99;
+    if (level > 255) {
+        level = 255;
     }
     
     // Set virtual device
@@ -190,7 +190,7 @@ DeviceMove.prototype.setStatus = function(deviceId,level) {
         var status
         if (level === 0) {
             status = 'down';
-        } else if (level >= 99) {
+        } else if (level === 255) {
             status = 'up';
         } else {
             status = 'half';
@@ -244,9 +244,9 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
         }
     }
     
-    if (newLevel >= 99) {
+    if (newLevel >= 255) {
         moveCommand = 'on';
-        newLevel = 99;
+        newLevel = 255;
         self.lock.add(
             deviceId,
             self.pollDevice,
@@ -341,8 +341,8 @@ DeviceMove.prototype.checkDevice = function(deviceId,args) {
     var setLevel        = undefined;
     
     // Detect full open
-    if (self.config.report === 'open' && realLevel >= 99) {
-        self.setStatus(deviceId,99);
+    if (self.config.report === 'open' && realLevel >= 255) {
+        self.setStatus(deviceId,255);
     // Detect full close
     } else if (self.config.report === 'close' && realLevel === 0) {
         self.setStatus(deviceId,0);
@@ -354,7 +354,7 @@ DeviceMove.prototype.checkDevice = function(deviceId,args) {
         console.log('[DeviceMove] Detected status mismatch for '+deviceId+'. Now closed');
         self.setStatus(deviceId,realLevel);
     // Correct partial close
-    } else if (self.config.report === 'open' && realLevel === 0 && virtualLevel >= 99) {
+    } else if (self.config.report === 'open' && realLevel === 0 && virtualLevel >= 255) {
         console.log('[DeviceMove] Detected status mismatch for '+deviceId+'. Now opened');
         self.setStatus(deviceId,realLevel);
     }

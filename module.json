@@ -109,7 +109,7 @@
       "properties" : {
          "deviceLimit" : {
             "dependencies" : "relatedCheck",
-            "maximum" : 99,
+            "maximum" : 255,
             "minimum" : 0,
             "required" : true,
             "type" : "integer"
@@ -166,7 +166,7 @@
          },
          "relatedDeviceLimit" : {
             "dependencies" : "relatedCheck",
-            "maximum" : 99,
+            "maximum" : 255,
             "minimum" : 0,
             "required" : true,
             "type" : "integer"
