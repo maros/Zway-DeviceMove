@@ -57,37 +57,38 @@ DeviceMove.prototype.initCallback = function() {
             return;
         }
         var deviceIcon  = icon
-        var probeTitle  = icon;
+        var probeType   = realDevice.get('metrics:probeType');
         var title       = realDevice.get('metrics:title');
         if (icon === 'default') {
             deviceIcon  = realDevice.get('metrics:icon');
-            probeTitle  = realDevice.get('metrics:probeTitle');
+        } else if (icon === 'blind') {
+            deviceIcon = 'blinds';
         }
         
         title = title.replace(/\s*\[raw\]\s*/,"");
         
         // Hide and rename device
         realDevice.set('metrics:title',title+' [raw]');
-        realDevice.set('permanently_hidden',true);
-        realDevice.set('visibility',false);
-        
+        //realDevice.set('permanently_hidden',true);
+        realDevice.set({'visibility': false});
+
         // Create virtual device
         var virtualDevice = this.controller.devices.create({
             deviceId: "DeviceMove_" + self.id+'_'+deviceId,
             defaults: {
-                deviceType: 'switchMultilevel',
                 metrics: {
-                    probeTitle: probeTitle,
-                    probeType: 'blind',
                     title: title,
-                    icon: deviceIcon,
                     level: null
                 }
             },
             overlay: {
-                location: realDevice.get('location'),
+                deviceType: 'switchMultilevel',
+                probeType: probeType,
                 tags: realDevice.get('tags'),
-                deviceType: 'switchMultilevel'
+                location: realDevice.get('location'),
+                metrics: {
+                    icon: deviceIcon
+                }
             },
             handler: function(command,args) {
                 if (command === 'update') {
@@ -145,8 +146,7 @@ DeviceMove.prototype.stop = function() {
         var title       = realDevice.get('metrics:title');
         title = title.replace(/\s*\[raw\]\s*/,"");
         realDevice.set('metrics:title',title);
-        realDevice.set('permanently_hidden',false);
-        realDevice.set('visibility',true);
+        realDevice.set({'visibility': true});
         
         if (virtualDevice !== null) {
             self.controller.devices.remove(virtualDevice);
