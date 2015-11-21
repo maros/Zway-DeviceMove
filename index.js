@@ -97,7 +97,7 @@ DeviceMove.prototype.initCallback = function() {
                 var currentLevel = this.get('metrics:level');
                 var newLevel;
                 if (command === 'on' || command === 'up' || command === 'startUp') {
-                    newLevel = 255;
+                    newLevel = 99;
                 } else if (command === 'off'|| command === 'down' || command === 'startDown') {
                     newLevel = 0;
                 } else if ("exact" === command || "exactSmooth" === command) {
@@ -107,8 +107,7 @@ DeviceMove.prototype.initCallback = function() {
                 } else if ("decrease" === command) {
                     newLevel = currentLevel - 10;
                 }
-                console.log('[DeviceMove] Got command '+command+' for '+deviceId+': Set to '+newLevel);
-                
+                console.log('[DeviceMove] Got command '+command+' for '+deviceId+': Set from '+currentLevel+' to '+newLevel);
                 self.delay.replace(
                     deviceId,
                     self.moveDevice,
@@ -180,8 +179,8 @@ DeviceMove.prototype.setStatus = function(deviceId,level) {
     var virtualDevice   = self.virtualDevices[deviceId];
     level               = parseInt(level);
     
-    if (level > 255) {
-        level = 255;
+    if (level > 99) {
+        level = 99;
     }
     
     // Set virtual device
@@ -190,7 +189,7 @@ DeviceMove.prototype.setStatus = function(deviceId,level) {
         var status
         if (level === 0) {
             status = 'down';
-        } else if (level === 255) {
+        } else if (level === 99) {
             status = 'up';
         } else {
             status = 'half';
@@ -233,27 +232,36 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
         if (relatedDevice == null) {
             console.error('[DevceMove] Related device not found '+deviceEntry.relatedDevice);
         } else {
-            var relatedLevel    = relatedDevice.get('metrics:level');
+            var relatedLevel = relatedDevice.get('metrics:level');
+            if (typeof(relatedLevel) === 'string'
+                && relatedLevel === 'on') {
+                relatedLevel = 1;
+            } else if (typeof(relatedLevel) === 'string'
+                && relatedLevel === 'off') {
+                relatedLevel = 0;
+            } else {
+                relatedLevel = parseInt(relatedLevel);
+            }
             if (self.config.relatedDeviceComparison === 'gt'
-                && relatedLevel > self.config.relatedDeviceLimit) {
+                && relatedLevel >= self.config.relatedDeviceLimit) {
                 newLevel = Math.min(newLevel,self.config.deviceLimit);
             } else if (self.config.relatedDeviceComparison === 'lt'
-                && relatedLevel < self.config.relatedDeviceLimit) {
+                && relatedLevel <= self.config.relatedDeviceLimit) {
                 newLevel = Math.max(newLevel,self.config.deviceLimit);
             }
         }
     }
     
-    if (newLevel >= 255) {
+    if (newLevel >= 99) {
         moveCommand = 'on';
-        newLevel = 255;
+        newLevel = 99;
         self.lock.add(
             deviceId,
             self.pollDevice,
             (deviceTime*2*1000),
             deviceId
         );
-        realDevice.set('metrics:level',254);
+        realDevice.set('metrics:level',255);
     } else if (newLevel <= 0) {
         moveCommand = 'off';
         newLevel = 0;
@@ -273,7 +281,6 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
         moveCommand     = (oldLevel > newLevel) ? 'startDown':'startUp';
         diffLevel       = Math.abs(diffTime / stepTime);
         newLevel        = (oldLevel < newLevel) ? oldLevel + diffLevel : oldLevel - diffLevel;
-        
         self.lock.add(
             deviceId,
             self.stopDevice,
@@ -302,7 +309,8 @@ DeviceMove.prototype.stopDevice = function(deviceId) {
         deviceId
     );
     deviceObject.performCommand("stop");
-    self.pollDevice(deviceId);
+    deviceObject.performCommand("update");
+    //self.pollDevice(deviceId);
 };
 
 DeviceMove.prototype.pollDevices = function() {
@@ -342,7 +350,7 @@ DeviceMove.prototype.checkDevice = function(deviceId,args) {
     
     // Detect full open
     if (self.config.report === 'open' && realLevel >= 255) {
-        self.setStatus(deviceId,255);
+        self.setStatus(deviceId,99);
     // Detect full close
     } else if (self.config.report === 'close' && realLevel === 0) {
         self.setStatus(deviceId,0);
@@ -354,7 +362,7 @@ DeviceMove.prototype.checkDevice = function(deviceId,args) {
         console.log('[DeviceMove] Detected status mismatch for '+deviceId+'. Now closed');
         self.setStatus(deviceId,realLevel);
     // Correct partial close
-    } else if (self.config.report === 'open' && realLevel === 0 && virtualLevel >= 255) {
+    } else if (self.config.report === 'open' && realLevel === 0 && virtualLevel >= 99) {
         console.log('[DeviceMove] Detected status mismatch for '+deviceId+'. Now opened');
         self.setStatus(deviceId,realLevel);
     }
