@@ -36,7 +36,7 @@
                         "datasource" : "namespaces",
                         "field" : "optionLabels",
                         "label" : "__related_device_label__",
-                        "optionLabels" : "namespaces:devices_switchMultilevel:deviceName,namespaces:devices_sensorMultilevel:deviceName",
+                        "optionLabels" : "namespaces:devices_switchMultilevel:deviceName,namespaces:devices_sensorMultilevel:deviceName,namespaces:devices_sensorBinary:deviceName",
                         "type" : "select",
                         "order": 3
                      },
@@ -76,8 +76,8 @@
             "helper" : "__related_device_comparison_helper__",
             "label" : "__related_device_comparison_label__",
             "optionLabels" : [
-               ">",
-               "<"
+               ">=",
+               "<="
             ],
             "order": 5
          },
@@ -119,13 +119,13 @@
                "properties" : {
                   "device" : {
                      "datasource" : "namespaces",
-                     "enum" : "namespaces:devices_switchMultilevel:deviceName",
+                     "enum" : "namespaces:devices_switchMultilevel:deviceId",
                      "field" : "enum",
                      "required" : true
                   },
                   "relatedDevice" : {
                      "datasource" : "namespaces",
-                     "enum" : "namespaces:devices_switchMultilevel:deviceName,namespaces:devices_sensorMultilevel:deviceName",
+                     "enum" : "namespaces:devices_switchMultilevel:deviceId,namespaces:devices_sensorMultilevel:deviceId,namespaces:devices_sensorBinary:deviceId",
                      "field" : "enum",
                      "required" : false
                   },
@@ -184,6 +184,6 @@
       "required" : true,
       "type" : "object"
    },
-   "singleton" : true,
+   "singleton" : false,
    "version" : "1.01"
 }
