@@ -92,6 +92,7 @@ DeviceMove.prototype.initCallback = function() {
             },
             handler: function(command,args) {
                 if (command === 'update') {
+                    self.pollDevice(deviceId);
                     return;
                 }
                 var currentLevel = this.get('metrics:level');
