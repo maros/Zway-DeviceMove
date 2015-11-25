@@ -98,7 +98,7 @@ DeviceMove.prototype.initCallback = function() {
                 var currentLevel = this.get('metrics:level');
                 var newLevel;
                 if (command === 'on' || command === 'up' || command === 'startUp') {
-                    newLevel = 99;
+                    newLevel = 255;
                 } else if (command === 'off'|| command === 'down' || command === 'startDown') {
                     newLevel = 0;
                 } else if ("exact" === command || "exactSmooth" === command) {
@@ -181,7 +181,7 @@ DeviceMove.prototype.setStatus = function(deviceId,level) {
     level               = parseInt(level);
     
     if (level > 99) {
-        level = 99;
+        level = 255;
     }
     
     // Set virtual device
@@ -190,7 +190,7 @@ DeviceMove.prototype.setStatus = function(deviceId,level) {
         var status
         if (level === 0) {
             status = 'down';
-        } else if (level === 99) {
+        } else if (level === 255) {
             status = 'up';
         } else {
             status = 'half';
@@ -255,7 +255,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
     
     if (newLevel >= 99) {
         moveCommand = 'on';
-        newLevel = 99;
+        newLevel = 255;
         self.lock.add(
             deviceId,
             self.pollDevice,
@@ -274,6 +274,9 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
         );
         realDevice.set('metrics:level',0);
     } else {
+        if (oldLevel > 99) {
+            oldLevel = 100;
+        }
         var diffLevel = Math.abs(oldLevel - newLevel);
         if (diffLevel <= 5) {
             return;
@@ -316,6 +319,7 @@ DeviceMove.prototype.stopDevice = function(deviceId) {
 
 DeviceMove.prototype.pollDevices = function() {
     var self = this;
+    console.log('[DeviceMove] Polling devices');
     _.each(self.config.devices,function(deviceEntry) {
         self.pollDevice(deviceEntry.device);
     });
@@ -350,8 +354,8 @@ DeviceMove.prototype.checkDevice = function(deviceId,args) {
     var setLevel        = undefined;
     
     // Detect full open
-    if (self.config.report === 'open' && realLevel >= 255) {
-        self.setStatus(deviceId,99);
+    if (self.config.report === 'open' && realLevel === 255) {
+        self.setStatus(deviceId,255);
     // Detect full close
     } else if (self.config.report === 'close' && realLevel === 0) {
         self.setStatus(deviceId,0);
