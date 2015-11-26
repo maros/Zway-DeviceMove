@@ -57,7 +57,7 @@ DeviceMove.prototype.initCallback = function() {
             return;
         }
         var deviceIcon  = icon
-        var probeType   = realDevice.get('metrics:probeType');
+        var probeType   = realDevice.get('probeType');
         var title       = realDevice.get('metrics:title');
         if (icon === 'default') {
             deviceIcon  = realDevice.get('metrics:icon');
