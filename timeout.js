@@ -1,3 +1,5 @@
+/*jshint -W058 */
+
 function TimeoutManager(scope) {
     var self        = this;
     self.scope      = scope;
@@ -47,21 +49,21 @@ TimeoutManager.prototype.replace  = function(id,fn,interval) {
     return self.timeouts[id];
 };
 TimeoutManager.prototype.get    = function(id) {
-    return this.timeouts[id]
+    return this.timeouts[id];
 };
 TimeoutManager.prototype.clear    = function(id) {
     var self   = this;
     if (typeof(self.timeouts[id]) !== "undefined") {
         self.timeouts[id].clear();
         delete self.timeouts[id];
-        return true;      
+        return true;
     }
     return false;
 };
 TimeoutManager.prototype.clearAll = function() {
     var self   = this;
     for (var id in self.timeouts) {
-        if (timeout.hasOwnProperty(id)  
+        if (self.timeouts.hasOwnProperty(id)  
             && typeof(self.timeouts[id]) !== "undefined") {
             self.timeouts[id].clear();
         }
@@ -93,7 +95,7 @@ Timeout.prototype.run      = function() {
 };
 Timeout.prototype.clear    = function() {
     var self   = this;
-    if (typeof(self.id) !== 'undefined' && self.cleared == false) {
+    if (typeof(self.id) !== 'undefined' && self.cleared === false) {
         clearTimeout(self.id);
     }
     self.cleared = true;
