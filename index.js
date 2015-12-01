@@ -52,11 +52,11 @@ DeviceMove.prototype.initCallback = function() {
     _.each(self.config.devices,function(deviceEntry) {
         var deviceId    = deviceEntry.device;
         var realDevice  = self.controller.devices.get(deviceId);
-        if (realDevice == null) {
+        if (realDevice === null) {
             console.error('[DevceMove] Device not found '+deviceId);
             return;
         }
-        var deviceIcon  = icon
+        var deviceIcon  = icon;
         var probeType   = realDevice.get('probeType');
         var title       = realDevice.get('metrics:title');
         if (icon === 'default') {
@@ -138,7 +138,7 @@ DeviceMove.prototype.stop = function() {
     // Remove device & callbacks
     _.each(self.config.devices,function(deviceId){
         var realDevice  = self.controller.devices.get(deviceId);
-        if (realDevice == null) {
+        if (realDevice === null) {
             return;
         }
         var virtualDevice = self.controller.devices.get(self.virtualDevices[deviceId]);
@@ -178,7 +178,7 @@ DeviceMove.prototype.stop = function() {
 DeviceMove.prototype.setStatus = function(deviceId,level) {
     var self            = this;
     var virtualDevice   = self.virtualDevices[deviceId];
-    level               = parseInt(level);
+    level               = parseInt(level,10);
     
     if (level > 99) {
         level = 255;
@@ -187,7 +187,7 @@ DeviceMove.prototype.setStatus = function(deviceId,level) {
     // Set virtual device
     virtualDevice.set('metrics:level',level);
     if (self.config.icon === 'window') {
-        var status
+        var status;
         if (level === 0) {
             status = 'down';
         } else if (level === 255) {
@@ -221,16 +221,16 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
     if (deviceEntry === null) {
         return;
     }
-    var deviceTime      = parseInt(deviceEntry.time);
+    var moveCommand;
+    var deviceTime      = parseInt(deviceEntry.time,10);
     var stepTime        = deviceTime / 100;
-    var moveCommand     = undefined;
-    var newLevel        = parseInt(level);
+    var newLevel        = parseInt(level,10);
     
     // Check related devices
     if (self.config.relatedCheck
         && typeof(deviceEntry.relatedDevice) !== undefined) {
         var relatedDevice = self.controller.devices.get(deviceEntry.relatedDevice);
-        if (relatedDevice == null) {
+        if (relatedDevice === null) {
             console.error('[DevceMove] Related device not found '+deviceEntry.relatedDevice);
         } else {
             var relatedLevel = relatedDevice.get('metrics:level');
@@ -241,7 +241,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
                 && relatedLevel === 'off') {
                 relatedLevel = 0;
             } else {
-                relatedLevel = parseInt(relatedLevel);
+                relatedLevel = parseInt(relatedLevel,10);
             }
             if (self.config.relatedDeviceComparison === 'gt'
                 && relatedLevel >= self.config.relatedDeviceLimit) {
@@ -349,9 +349,9 @@ DeviceMove.prototype.checkDevice = function(deviceId,args) {
     
     var realDevice      = self.controller.devices.get(deviceId);
     var virtualDevice   = self.virtualDevices[deviceId];
-    var realLevel       = parseInt(realDevice.get('metrics:level'));
-    var virtualLevel    = parseInt(virtualDevice.get('metrics:level'));
-    var setLevel        = undefined;
+    var realLevel       = parseInt(realDevice.get('metrics:level'),10);
+    var virtualLevel    = parseInt(virtualDevice.get('metrics:level'),10);
+    var setLevel;
     
     // Detect full open
     if (self.config.report === 'open' && realLevel === 255) {
