@@ -14,7 +14,7 @@
    "related_device_comparison_helper" : "Comparison operator for related devices",
    "related_device_comparison_label" : "Comparison",
    "related_device_label" : "Related device",
-   "related_device_limit_helper" : "Constrain current device if the related device is above or below (depending on the comparison operator) the given limit. Binary sensors use 1 and 0 as comparison values.",
+   "related_device_limit_helper" : "Constrain current device if the related device is above or below (depending on the comparison operator) the given limit. Binary sensors use 0 and 100 as comparison values.",
    "related_device_limit_label" : "Related device limit",
    "report_helper" : "Sensor that reports the correct device state",
    "report_label" : "Device report",
