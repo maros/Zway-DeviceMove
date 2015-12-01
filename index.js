@@ -216,6 +216,9 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
     
     var virtualDevice   = self.virtualDevices[deviceId];
     var oldLevel        = virtualDevice.get('metrics:level');
+    if (oldLevel >= 99) {
+        oldLevel = 100;
+    }
     var realDevice      = self.controller.devices.get(deviceId);
     var deviceEntry     = _.find(self.config.devices,function(deviceEntry) { return deviceEntry.device === deviceId; });
     if (deviceEntry === null) {
@@ -245,6 +248,9 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
             }
             if (self.config.relatedDeviceComparison === 'gt'
                 && relatedLevel >= self.config.relatedDeviceLimit) {
+            if (relatedLevel >= 99) {
+                relatedLevel = 100;
+            }
                 newLevel = Math.min(newLevel,self.config.deviceLimit);
             } else if (self.config.relatedDeviceComparison === 'lt'
                 && relatedLevel <= self.config.relatedDeviceLimit) {
@@ -274,11 +280,8 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
         );
         realDevice.set('metrics:level',0);
     } else {
-        if (oldLevel > 99) {
-            oldLevel = 100;
-        }
         var diffLevel = Math.abs(oldLevel - newLevel);
-        if (diffLevel <= 5) {
+        if (diffLevel <= 10) {
             return;
         }
         var diffTime    = stepTime * diffLevel;
