@@ -97,25 +97,31 @@ DeviceMove.prototype.initCallback = function() {
                 }
                 var currentLevel = this.get('metrics:level');
                 var newLevel;
+                var delay = false;
                 if (command === 'on' || command === 'up' || command === 'startUp') {
                     newLevel = 255;
                 } else if (command === 'off'|| command === 'down' || command === 'startDown') {
                     newLevel = 0;
                 } else if ("exact" === command || "exactSmooth" === command) {
                     newLevel = args.level;
+                    delay = true;
                 } else if ("increase" === command) {
                     newLevel = currentLevel + 10;
                 } else if ("decrease" === command) {
                     newLevel = currentLevel - 10;
                 }
                 console.log('[DeviceMove] Got command '+command+' for '+deviceId+': Set from '+currentLevel+' to '+newLevel);
-                self.delay.replace(
-                    deviceId,
-                    self.moveDevice,
-                    1000*2,
-                    deviceId,
-                    newLevel
-                );
+                if (delay) {
+                    self.delay.replace(
+                        deviceId,
+                        self.moveDevice,
+                        1000*2.5,
+                        deviceId,
+                        newLevel
+                    );
+                } else {
+                    self.moveDevice(deviceId,newLevel);
+                }
             },
             moduleId: self.id
         });
