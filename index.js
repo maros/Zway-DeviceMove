@@ -98,7 +98,7 @@ DeviceMove.prototype.initCallback = function() {
                 var currentLevel = this.get('metrics:level');
                 var newLevel;
                 var delay = false;
-                if (command === 'on' || command === 'up' || command === 'startUp') {
+                if (command === 'on' || command === 'up' || command === 'startUp' || command === 'upMax') {
                     newLevel = 255;
                 } else if (command === 'off'|| command === 'down' || command === 'startDown') {
                     newLevel = 0;
