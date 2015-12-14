@@ -38,13 +38,18 @@
                         "label" : "__related_device_label__",
                         "optionLabels" : "namespaces:devices_switchMultilevel:deviceName,namespaces:devices_sensorMultilevel:deviceName,namespaces:devices_sensorBinary:deviceName",
                         "type" : "select",
-                        "order": 3
+                        "order": 4
                      },
-                     "time" : {
-                        "helper" : "__time_helper__",
-                        "label" : "__time_label__",
+                     "timeUp" : {
+                        "helper" : "__time_up_helper__",
+                        "label" : "__time_up_label__",
                         "order": 2
-                     }
+                     },
+                     "timeDown" : {
+                         "helper" : "__time_down_helper__",
+                         "label" : "__time_down_label__",
+                         "order": 3
+                      }
                   }
                }
             },
@@ -129,9 +134,13 @@
                      "field" : "enum",
                      "required" : false
                   },
-                  "time" : {
+                  "timeUp" : {
                      "required" : true,
                      "type" : "number"
+                  },
+                  "timeDown" : {
+                      "required" : true,
+                      "type" : "number"
                   }
                },
                "required" : true,

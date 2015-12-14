@@ -231,9 +231,8 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
         return;
     }
     var moveCommand;
-    var deviceTime      = parseInt(deviceEntry.time,10);
-    var stepTime        = deviceTime / 100;
     var newLevel        = parseInt(level,10);
+    var maxTime         = Math.max(deviceEntry.timeUp,deviceEntry.timeDown);
     
     // Check related devices
     if (self.config.relatedCheck
@@ -271,7 +270,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
         self.lock.add(
             deviceId,
             self.pollDevice,
-            (deviceTime*2*1000),
+            (maxTime*2*1000),
             deviceId
         );
         realDevice.set('metrics:level',255);
@@ -281,7 +280,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
         self.lock.add(
             deviceId,
             self.pollDevice,
-            (deviceTime*2*1000),
+            (maxTime*2*1000),
             deviceId
         );
         realDevice.set('metrics:level',0);
@@ -292,6 +291,8 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
         }
         var diffTime    = stepTime * diffLevel;
         moveCommand     = (oldLevel > newLevel) ? 'startDown':'startUp';
+        var deviceTime  = parseInt(deviceEntry[(oldLevel > newLevel) ? 'timeDown':'timeUp'],10);
+        var stepTime    = deviceTime / 100;
         diffLevel       = Math.abs(diffTime / stepTime);
         newLevel        = (oldLevel < newLevel) ? oldLevel + diffLevel : oldLevel - diffLevel;
         self.lock.add(
@@ -305,7 +306,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
     }
     
     realDevice.performCommand(moveCommand);
-
+    
     // Set status
     virtualDevice.set('metrics:level',newLevel);
     
