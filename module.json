@@ -19,7 +19,7 @@
             },
             "helper" : "__device_limit_helper__",
             "label" : "__device_limit_label__",
-            "order": 7
+            "order" : 7
          },
          "devices" : {
             "fields" : {
@@ -29,32 +29,32 @@
                         "datasource" : "namespaces",
                         "field" : "optionLabels",
                         "optionLabels" : "namespaces:devices_switchMultilevel:deviceName",
-                        "type" : "select",
-                        "order": 1
+                        "order" : 1,
+                        "type" : "select"
                      },
                      "relatedDevice" : {
                         "datasource" : "namespaces",
                         "field" : "optionLabels",
                         "label" : "__related_device_label__",
                         "optionLabels" : "namespaces:devices_switchMultilevel:deviceName,namespaces:devices_sensorMultilevel:deviceName,namespaces:devices_sensorBinary:deviceName",
-                        "type" : "select",
-                        "order": 4
+                        "order" : 4,
+                        "type" : "select"
+                     },
+                     "timeDown" : {
+                        "helper" : "__time_down_helper__",
+                        "label" : "__time_down_label__",
+                        "order" : 3
                      },
                      "timeUp" : {
                         "helper" : "__time_up_helper__",
                         "label" : "__time_up_label__",
-                        "order": 2
-                     },
-                     "timeDown" : {
-                         "helper" : "__time_down_helper__",
-                         "label" : "__time_down_label__",
-                         "order": 3
-                      }
+                        "order" : 2
+                     }
                   }
                }
             },
             "label" : "__devices_label__",
-            "order": 1
+            "order" : 1
          },
          "icon" : {
             "helper" : "__icon_helper__",
@@ -65,14 +65,14 @@
                "__icon_window__",
                "__icon_multilevel__"
             ],
-            "order": 2
+            "order" : 2
          },
          "relatedCheck" : {
             "default" : false,
             "helper" : "__related_check_helper__",
             "label" : "__related_check_label__",
-            "type" : "checkbox",
-            "order": 4
+            "order" : 4,
+            "type" : "checkbox"
          },
          "relatedDeviceComparison" : {
             "dependencies" : {
@@ -84,7 +84,7 @@
                ">=",
                "<="
             ],
-            "order": 5
+            "order" : 5
          },
          "relatedDeviceLimit" : {
             "dependencies" : {
@@ -92,7 +92,7 @@
             },
             "helper" : "__related_device_limit_helper__",
             "label" : "__related_device_limit_label__",
-            "order": 6
+            "order" : 6
          },
          "report" : {
             "helper" : "__report_helper__",
@@ -102,7 +102,7 @@
                "__report_label_close__",
                "__report_label_none__"
             ],
-            "order": 3
+            "order" : 3
          }
       }
    },
@@ -134,13 +134,13 @@
                      "field" : "enum",
                      "required" : false
                   },
-                  "timeUp" : {
+                  "timeDown" : {
                      "required" : true,
                      "type" : "number"
                   },
-                  "timeDown" : {
-                      "required" : true,
-                      "type" : "number"
+                  "timeUp" : {
+                     "required" : true,
+                     "type" : "number"
                   }
                },
                "required" : true,
@@ -194,5 +194,5 @@
       "type" : "object"
    },
    "singleton" : false,
-   "version" : "1.01"
+   "version" : 1.02
 }

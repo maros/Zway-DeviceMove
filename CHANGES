@@ -1,0 +1,21 @@
+1.02 2015 Dec 20, Sun
+    * Update title
+    * German translation
+    * Handle different up and down move times
+    * Add missing command
+    * No delay for full up/down
+    * Ensure max level
+    * Read from probeType instead of metrics: probeType
+    * Level 255 = fully opened
+    * Poll device on update
+    * Allow to add binary sensors as related devices
+    * Fix device creation
+    * Update documentation
+    * Various fixups
+
+1.01 2015 Oct 25, Sun
+    * Fix visibility
+    * Add documentation
+
+1.00 2015 Oct 17, Sat
+    * Initial Release 
