@@ -25,5 +25,5 @@
    "time_up_label" : "Device open time",
    "time_down_helper" : "Time in seconds to fully close device",
    "time_down_label" : "Device close time",
-   "title" : "Move blinds/windows to selected position"
+   "title" : "Move blinds/windows based on timing"
 }
