@@ -1,5 +1,5 @@
 {
-   "description" : "Move devices like windows or blinds based on timing information to a selected position.This module can also ensure that two automation devices operating on the same physical object (ie. window opener and blinds motor mounted on the same window) do not interfere with eachother.",
+   "description" : "Move devices like windows or blinds based on timing information to a selected position.This module can also ensure that two automation devices operating on the same physical object (ie. window opener and blinds motor mounted on the same window) do not interfere with each other.",
    "device_limit_helper" : "Device limit for this device",
    "device_limit_label" : "Device limit",
    "devices_label" : "Devices",
