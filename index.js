@@ -110,8 +110,13 @@ DeviceMove.prototype.initCallback = function() {
                 } else if ("decrease" === command) {
                     newLevel = currentLevel - 10;
                 }
+                
+                if (newLevel === 0 || newLevel >= 99) {
+                    delay = false; 
+                }
                 console.log('[DeviceMove] Got command '+command+' for '+deviceId+': Set from '+currentLevel+' to '+newLevel);
                 if (delay) {
+                    
                     self.delay.replace(
                         deviceId,
                         self.moveDevice,
