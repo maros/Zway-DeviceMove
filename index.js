@@ -298,12 +298,12 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
         if (diffLevel <= 10) {
             return;
         }
-        var deviceTime  = parseInt(deviceEntry[(oldLevel > newLevel) ? 'timeDown':'timeUp'],10);
+        var deviceTime  = deviceEntry[(oldLevel > newLevel) ? 'timeDown':'timeUp'];
         var stepTime    = deviceTime / 100;
         var diffTime    = stepTime * diffLevel;
         diffLevel       = Math.abs(diffTime / stepTime);
         moveCommand     = (oldLevel > newLevel) ? 'startDown':'startUp';
-        newLevel        = (oldLevel < newLevel) ? oldLevel + diffLevel : oldLevel - diffLevel;
+        newLevel        = parseInt((oldLevel < newLevel) ? oldLevel + diffLevel : oldLevel - diffLevel,10);
         self.lock.add(
             deviceId,
             self.stopDevice,
