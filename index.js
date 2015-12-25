@@ -274,7 +274,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
     }
     
     if (newLevel >= 99) {
-        moveCommand = 'on';
+        moveCommand = 'startUp';
         newLevel = 255;
         self.lock.add(
             deviceId,
@@ -284,7 +284,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
         );
         realDevice.set('metrics:level',255);
     } else if (newLevel <= 0) {
-        moveCommand = 'off';
+        moveCommand = 'startDown';
         newLevel = 0;
         self.lock.add(
             deviceId,
