@@ -32,8 +32,6 @@ DeviceMove.prototype.init = function (config) {
     DeviceMove.super_.prototype.init.call(this, config);
     var self = this;
     
-    executeFile("modules/DeviceMove/timeout.js");
-    
     self.delay          = new TimeoutManager(self);
     self.lock           = new TimeoutManager(self);
     self.timer          = setInterval(
