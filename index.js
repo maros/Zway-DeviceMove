@@ -213,8 +213,11 @@ DeviceMove.prototype.setStatus = function(deviceId,level) {
 DeviceMove.prototype.moveDevice = function(deviceId,level) {
     var self            = this;
     
+    console.log('[DeviceMove] Got move device '+ deviceId+' to '+level);
+    
     // Check if already running
     if (self.lock.running(deviceId)) {
+        console.log('[DeviceMove] Device '+ deviceId+' is locked');
         self.delay.replace(
             deviceId,
             self.moveDevice,
@@ -233,6 +236,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
     var realDevice      = self.controller.devices.get(deviceId);
     var deviceEntry     = _.find(self.config.devices,function(deviceEntry) { return deviceEntry.device === deviceId; });
     if (deviceEntry === null) {
+        console.error('[DeviceMove] Could not find real device '+deviceId);
         return;
     }
     var moveCommand;
