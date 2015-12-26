@@ -20,7 +20,7 @@ function DeviceMove (id, controller) {
     this.timer          = undefined;
 }
 
-inherits(DeviceMove, AutomationModule);
+inherits(DeviceMove, BaseModule);
 
 _module = DeviceMove;
 
@@ -112,7 +112,7 @@ DeviceMove.prototype.initCallback = function() {
                 if (newLevel === 0 || newLevel >= 99) {
                     delay = false; 
                 }
-                console.log('[DeviceMove] Got command '+command+' for '+deviceId+': Set from '+currentLevel+' to '+newLevel);
+                self.log('Got command '+command+' for '+deviceId+': Set from '+currentLevel+' to '+newLevel);
                 if (delay) {
                     
                     self.delay.replace(
@@ -211,11 +211,11 @@ DeviceMove.prototype.setStatus = function(deviceId,level) {
 DeviceMove.prototype.moveDevice = function(deviceId,level) {
     var self            = this;
     
-    console.log('[DeviceMove] Got move device '+ deviceId+' to '+level);
+    self.log('Got move device '+ deviceId+' to '+level);
     
     // Check if already running
     if (self.lock.running(deviceId)) {
-        console.log('[DeviceMove] Device '+ deviceId+' is locked');
+        self.log('Device '+ deviceId+' is locked');
         self.delay.replace(
             deviceId,
             self.moveDevice,
@@ -309,7 +309,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
             deviceId
         );
         
-        console.log('[DeviceMove] Move device '+deviceId+' from '+oldLevel+' to '+newLevel+' for '+diffTime+' seconds');
+        self.log('Move device '+deviceId+' from '+oldLevel+' to '+newLevel+' for '+diffTime+' seconds');
     }
     
     realDevice.performCommand(moveCommand);
@@ -336,7 +336,7 @@ DeviceMove.prototype.stopDevice = function(deviceId) {
 
 DeviceMove.prototype.pollDevices = function() {
     var self = this;
-    console.log('[DeviceMove] Polling devices');
+    self.log('Polling devices');
     _.each(self.config.devices,function(deviceEntry) {
         self.pollDevice(deviceEntry.device);
     });
@@ -381,11 +381,11 @@ DeviceMove.prototype.checkDevice = function(deviceId,args) {
         self.setStatus(deviceId,realLevel);
     // Correct partial open
     } else if (self.config.report === 'close' && realLevel > 0 && virtualLevel === 0) {
-        console.log('[DeviceMove] Detected status mismatch for '+deviceId+'. Now closed');
+        self.log('Detected status mismatch for '+deviceId+'. Now closed');
         self.setStatus(deviceId,realLevel);
     // Correct partial close
     } else if (self.config.report === 'open' && realLevel === 0 && virtualLevel >= 99) {
-        console.log('[DeviceMove] Detected status mismatch for '+deviceId+'. Now opened');
+        self.log('Detected status mismatch for '+deviceId+'. Now opened');
         self.setStatus(deviceId,realLevel);
     }
     
