@@ -1,3 +1,10 @@
+1.03 2015 Dec 27, Sun
+    * Use BaseModule
+    * Convert to int one step later
+    * Add different commands for full up/down
+    * Add more logging
+    * No delay for full up/down
+
 1.02 2015 Dec 20, Sun
     * Update title
     * German translation
