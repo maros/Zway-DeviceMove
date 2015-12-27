@@ -6,7 +6,7 @@
       "icon" : "default",
       "title" : "__title__"
    },
-   "dependencies" : [],
+   "dependencies" : ["BaseModule"],
    "homepage" : "http://k-1.com",
    "icon" : "icon.png",
    "maturity" : "stable",
