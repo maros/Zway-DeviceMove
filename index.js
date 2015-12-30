@@ -51,7 +51,7 @@ DeviceMove.prototype.initCallback = function() {
         var deviceId    = deviceEntry.device;
         var realDevice  = self.controller.devices.get(deviceId);
         if (realDevice === null) {
-            console.error('[DevceMove] Device not found '+deviceId);
+            self.error('Device not found '+deviceId);
             return;
         }
         var deviceIcon  = icon;
@@ -114,7 +114,6 @@ DeviceMove.prototype.initCallback = function() {
                 }
                 self.log('Got command '+command+' for '+deviceId+': Set from '+currentLevel+' to '+newLevel);
                 if (delay) {
-                    
                     self.delay.replace(
                         deviceId,
                         self.moveDevice,
@@ -234,19 +233,20 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
     var realDevice      = self.controller.devices.get(deviceId);
     var deviceEntry     = _.find(self.config.devices,function(deviceEntry) { return deviceEntry.device === deviceId; });
     if (deviceEntry === null) {
-        console.error('[DeviceMove] Could not find real device '+deviceId);
+        self.error('Could not find real device '+deviceId);
         return;
     }
     var moveCommand;
     var newLevel        = parseInt(level,10);
     var maxTime         = Math.max(deviceEntry.timeUp,deviceEntry.timeDown);
+    var commandLevel    = newLevel;
     
     // Check related devices
     if (self.config.relatedCheck
         && typeof(deviceEntry.relatedDevice) !== undefined) {
         var relatedDevice = self.controller.devices.get(deviceEntry.relatedDevice);
         if (relatedDevice === null) {
-            console.error('[DevceMove] Related device not found '+deviceEntry.relatedDevice);
+            self.error('Related device not found '+deviceEntry.relatedDevice);
         } else {
             var relatedLevel = relatedDevice.get('metrics:level');
             if (typeof(relatedLevel) === 'string'
@@ -267,6 +267,10 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
             } else if (self.config.relatedDeviceComparison === 'lt'
                 && relatedLevel <= self.config.relatedDeviceLimit) {
                 newLevel = Math.max(newLevel,self.config.deviceLimit);
+            }
+            
+            if (commandLevel !== newLevel) {
+                self.log('Constrained level to '+newLevel+' due to related device at '+relatedLevel);
             }
         }
     }
