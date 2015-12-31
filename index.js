@@ -251,22 +251,22 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
             var relatedLevel = relatedDevice.get('metrics:level');
             if (typeof(relatedLevel) === 'string'
                 && relatedLevel === 'on') {
-                relatedLevel = 1;
+                relatedLevel = 100;
             } else if (typeof(relatedLevel) === 'string'
                 && relatedLevel === 'off') {
                 relatedLevel = 0;
             } else {
                 relatedLevel = parseInt(relatedLevel,10);
             }
-            if (self.config.relatedDeviceComparison === 'gt'
-                && relatedLevel >= self.config.relatedDeviceLimit) {
             if (relatedLevel >= 99) {
                 relatedLevel = 100;
             }
-                newLevel = Math.min(newLevel,self.config.deviceLimit);
-            } else if (self.config.relatedDeviceComparison === 'lt'
-                && relatedLevel <= self.config.relatedDeviceLimit) {
+            if (self.config.relatedDeviceComparison === 'gt'
+                && relatedLevel > self.config.relatedDeviceLimit) {
                 newLevel = Math.max(newLevel,self.config.deviceLimit);
+            } else if (self.config.relatedDeviceComparison === 'lt'
+                && relatedLevel < self.config.relatedDeviceLimit) {
+                newLevel = Math.min(newLevel,self.config.deviceLimit);
             }
             
             if (commandLevel !== newLevel) {
