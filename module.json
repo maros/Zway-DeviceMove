@@ -2,9 +2,9 @@
    "author" : "Maroš Kollár",
    "category" : "device_enhancements",
    "defaults" : {
-      "description" : "__description__",
+      "description" : "__m_descr__",
       "icon" : "default",
-      "title" : "__title__"
+      "title" : "__m_title__"
    },
    "dependencies" : [
       "BaseModule"

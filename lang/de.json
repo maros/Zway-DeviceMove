@@ -1,5 +1,5 @@
 {
-   "description" : "Bewegt Stellmotoren wie Fensteröffner oder Jalousies anhand von Zeit Informationen an die gewünschte Position. This module can also ensure that two automation devices operating on the same physical object (ie. window opener and blinds motor mounted on the same window) do not interfere with eachother.",
+   "m_descr" : "Bewegt Stellmotoren wie Fensteröffner oder Jalousies anhand von Zeit Informationen an die gewünschte Position. This module can also ensure that two automation devices operating on the same physical object (ie. window opener and blinds motor mounted on the same window) do not interfere with eachother.",
    "device_limit_helper" : "Positions Limit für dieses Gerät wenn ein zusammengehöriges Gerät bereits geöffnet ist",
    "device_limit_label" : "Positions limit",
    "devices_label" : "Geräte",
@@ -25,5 +25,5 @@
    "time_up_label" : "Zeit zum Öffnen",
    "time_down_helper" : "Zeit (in Sekunden) um das Gerät vollständig zu schließen",
    "time_down_label" : "Zeit zum Schließen",
-   "title" : "Stellmotoren anhand einer Zeitvorgabe bewegen"
+   "m_title" : "Stellmotoren anhand einer Zeitvorgabe bewegen"
 }
