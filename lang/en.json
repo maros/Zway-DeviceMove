@@ -1,14 +1,15 @@
 {
-   "m_descr" : "Move devices like windows or blinds based on timing information to a selected position.This module can also ensure that two automation devices operating on the same physical object (ie. window opener and blinds motor mounted on the same window) do not interfere with each other.",
    "device_limit_helper" : "Device limit for this device",
    "device_limit_label" : "Device limit",
    "devices_label" : "Devices",
    "icon_blind" : "Blind",
    "icon_default" : "Default (Take from device)",
-   "icon_multilevel" : "Dimmer",
    "icon_helper" : "Select the icon to be used for the virtual devices",
    "icon_label" : "Icon",
+   "icon_multilevel" : "Dimmer",
    "icon_window" : "Window",
+   "m_descr" : "Move devices like windows or blinds based on timing information to a selected position.This module can also ensure that two automation devices operating on the same physical object (ie. window opener and blinds motor mounted on the same window) do not interfere with each other.\nCheck https://github.com/maros/Zway-DeviceMove//blob/master/README.md for detailed documentation.",
+   "m_title" : "Move blinds/windows based on timing",
    "related_check_helper" : "Check for other devices operating on the same physical object. Ie. ensures that a blind cannot be closed above a certain limit if the related window opener has opened the window. Also possible to add binary sensors.",
    "related_check_label" : "Check related decvices",
    "related_device_comparison_helper" : "Comparison operator for related devices",
@@ -21,9 +22,8 @@
    "report_label_close" : "When fully closed",
    "report_label_none" : "None",
    "report_label_open" : "When fully opened",
-   "time_up_helper" : "Time in seconds to fully open device",
-   "time_up_label" : "Device open time",
    "time_down_helper" : "Time in seconds to fully close device",
    "time_down_label" : "Device close time",
-   "m_title" : "Move blinds/windows based on timing"
+   "time_up_helper" : "Time in seconds to fully open device",
+   "time_up_label" : "Device open time"
 }
