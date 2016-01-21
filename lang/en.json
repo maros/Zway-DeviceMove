@@ -8,7 +8,7 @@
    "icon_label" : "Icon",
    "icon_multilevel" : "Dimmer",
    "icon_window" : "Window",
-   "m_descr" : "Move devices like windows or blinds based on timing information to a selected position.This module can also ensure that two automation devices operating on the same physical object (ie. window opener and blinds motor mounted on the same window) do not interfere with each other.<br>Check  <a href=\"https://github.com/maros/Zway-DeviceMove/blob/master/README.md\">github.com/maros/Zway-DeviceMove</a> for detailed documentation.",
+   "m_descr" : "Move devices like windows or blinds based on timing information to a selected position.This module can also ensure that two automation devices operating on the same physical object (ie. window opener and blinds motor mounted on the same window) do not interfere with each other.<br>Check <a href=https://github.com/maros/Zway-DeviceMove/blob/master/README.md>github.com/maros/Zway-DeviceMove</a> for detailed documentation.",
    "m_title" : "Move blinds/windows based on timing",
    "related_check_helper" : "Check for other devices operating on the same physical object. Ie. ensures that a blind cannot be closed above a certain limit if the related window opener has opened the window. Also possible to add binary sensors.",
    "related_check_label" : "Check related decvices",
