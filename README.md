@@ -20,12 +20,6 @@ proper functionality and prevents damage.
 
 # Configuration
 
-## report
-
-Usually these devices can correctly report certain states (either fully 
-opened, or fully closed, but not both) to the controller. This selection
-indicates which position is correctly reported.
-
 ## devices
 
 List of managed devices
@@ -52,7 +46,7 @@ parent device), blinds, windows and dimmer icons are available.
 Indicates at which position correct device positioning is reported. 
 Eg. A blind only reports 0% when fully closed, or 100% when partially or fully
 opened. In this case the report setting needs to be set to report-'close', 
-because only the fully closed state is reported exactly.
+because only the fully closed state is reported correctly.
 
 ## relatedCheck
 
@@ -60,9 +54,9 @@ Enables checks for related devices. When two automation devices operate
 on the same physical object, and interfere witch each other then checking
 for related devices ensures proper functionality and prevents damage.
 Eg. Closing a blind is not possible when the window was opened by a chain
-drive. On the other hand windows should not be opened more than 20% with
-closed blinds. This check is able to limit the movement of the managed devices
-accordingly.
+drive. On the other hand windows should not be opened above a certain
+limit with closed blinds. This check is able to limit the movement of the 
+managed devices accordingly.
 
 ## relatedDeviceLimit, relatedDeviceComparison
 
