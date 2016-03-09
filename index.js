@@ -248,7 +248,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
     
     // Check related devices
     if (self.config.relatedCheck
-        && typeof(deviceEntry.relatedDevice) !== undefined) {
+        && typeof(deviceEntry.relatedDevice) !== 'undefined') {
         var relatedDevice = self.controller.devices.get(deviceEntry.relatedDevice);
         if (relatedDevice === null) {
             self.error('Related device not found '+deviceEntry.relatedDevice);
