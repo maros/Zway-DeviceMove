@@ -107,6 +107,11 @@ DeviceMove.prototype.initCallback = function() {
                     newLevel = currentLevel + 10;
                 } else if ("decrease" === command) {
                     newLevel = currentLevel - 10;
+                } else if ("stop" === command) {
+                    // TODO figure out if we are currently moving, and try to calc new position
+                    var realDevice = self.controller.devices.get(deviceId);
+                    realDevice.performCommand('stop');
+                    return;
                 }
                 
                 if (newLevel === 0 || newLevel >= 99) {
