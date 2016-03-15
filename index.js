@@ -117,6 +117,7 @@ DeviceMove.prototype.initCallback = function() {
                 if (newLevel === 0 || newLevel >= 99) {
                     delay = false; 
                 }
+                this.set('metrics:target',newLevel);
                 self.log('Got command '+command+' for '+deviceId+': Set from '+currentLevel+' to '+newLevel);
                 if (delay) {
                     self.delay.replace(
@@ -380,6 +381,7 @@ DeviceMove.prototype.checkDevice = function(deviceId,args) {
     var virtualDevice   = self.virtualDevices[deviceId];
     var realLevel       = parseInt(realDevice.get('metrics:level'),10);
     var virtualLevel    = parseInt(virtualDevice.get('metrics:level'),10);
+    var targetLevel     = parseInt(virtualDevice.get('metrics:target') || virtualLevel,10);
     var setLevel;
     
     // Detect full open
@@ -403,6 +405,13 @@ DeviceMove.prototype.checkDevice = function(deviceId,args) {
     
     // Set update time
     virtualDevice.set('updateTime',realDevice.get('updateTime'));
+    
+    // Set target level
+    if (virtualLevel !== targetLevel
+        && Math.abs(virtualLevel - targetLevel) >= self.diff) {
+        self.log('Detected target mismatch for '+deviceId+'. Now moving');
+        self.moveDevice(virtualDevice,targetLevel);
+    }
 };
 
  
