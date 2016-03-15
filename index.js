@@ -15,6 +15,7 @@ function DeviceMove (id, controller) {
     
     this.virtualDevices = {};
     this.callbacks      = {};
+    this.diff           = 10;
     this.delay          = undefined;
     this.lock           = undefined;
     this.timer          = undefined;
@@ -302,7 +303,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
         realDevice.set('metrics:level',0);
     } else {
         var diffLevel = Math.abs(oldLevel - newLevel);
-        if (diffLevel <= 10) {
+        if (diffLevel < self.diff) {
             return;
         }
         var deviceTime  = deviceEntry[(oldLevel > newLevel) ? 'timeDown':'timeUp'];
