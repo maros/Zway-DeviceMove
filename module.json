@@ -155,7 +155,7 @@
          "icon" : {
             "enum" : [
                "default",
-               "blind",
+               "blinds",
                "window",
                "multilevel"
             ],
