@@ -36,8 +36,8 @@ DeviceMove.prototype.init = function (config) {
     self.delay          = new TimeoutManager(self);
     self.lock           = new TimeoutManager(self);
     self.timer          = setInterval(
-        _.bind(self.pollDevices,self), 
-        (15*60*1000)
+        _.bind(self.checkAllDevices,self), 
+        (5*60*1000)
     );
     
     setTimeout(_.bind(self.initCallback,self),10000);
@@ -48,6 +48,7 @@ DeviceMove.prototype.initCallback = function() {
     
     var icon = self.config.icon;
     
+    // Loop all devices
     _.each(self.config.devices,function(deviceEntry) {
         var deviceId    = deviceEntry.device;
         var realDevice  = self.controller.devices.get(deviceId);
@@ -55,8 +56,9 @@ DeviceMove.prototype.initCallback = function() {
             self.error('Device not found '+deviceId);
             return;
         }
+        // Set icon
         var deviceIcon  = icon;
-        var probeType   = realDevice.get('probeType');
+        //var probeType   = realDevice.get('probeType');
         var title       = realDevice.get('metrics:title');
         if (icon === 'default') {
             deviceIcon  = realDevice.get('metrics:icon');
@@ -81,7 +83,8 @@ DeviceMove.prototype.initCallback = function() {
             },
             overlay: {
                 deviceType: 'switchMultilevel',
-                probeType: probeType,
+                deviceSubType: realDevice.get('deviceSubType'),
+                //probeType: probeType,
                 tags: realDevice.get('tags'),
                 location: realDevice.get('location'),
                 metrics: {
@@ -117,8 +120,8 @@ DeviceMove.prototype.initCallback = function() {
                 if (newLevel === 0 || newLevel >= 99) {
                     delay = false; 
                 }
-                this.set('metrics:target',newLevel);
-                self.log('Got command '+command+' for '+deviceId+': Set from '+currentLevel+' to '+newLevel);
+                this.set('metrics:target',newLevel,{ silent: true });
+                self.log('Got command '+command+' for '+deviceId+': Set from '+currentLevel+' to '+newLevel+(delay) ? 'with delay':'without delay');
                 if (delay) {
                     self.delay.replace(
                         deviceId,
@@ -212,18 +215,18 @@ DeviceMove.prototype.setStatus = function(deviceId,level) {
         } else {
             status = 'half';
         }
-        virtualDevice.set('metrics:icon',"/ZAutomation/api/v1/load/modulemedia/DeviceMove/window-"+status+".png");
+        virtualDevice.set('metrics:icon',self.imagePath+"/window-"+status+".png");
     }
 };
 
 DeviceMove.prototype.moveDevice = function(deviceId,level) {
-    var self            = this;
+    var self = this;
     
     self.log('Got move device '+ deviceId+' to '+level);
     
     // Check if already running
     if (self.lock.running(deviceId)) {
-        self.log('Device '+ deviceId+' is locked');
+        self.log('Device '+ deviceId+' is locked. Delay action');
         self.delay.replace(
             deviceId,
             self.moveDevice,
@@ -347,11 +350,24 @@ DeviceMove.prototype.stopDevice = function(deviceId) {
     //self.pollDevice(deviceId);
 };
 
-DeviceMove.prototype.pollDevices = function() {
+DeviceMove.prototype.checkAllDevices = function() {
     var self = this;
-    self.log('Polling devices');
+    self.log('Checking devices');
+    
     _.each(self.config.devices,function(deviceEntry) {
-        self.pollDevice(deviceEntry.device);
+        var deviceId        = deviceEntry.device;
+        var virtualDevice   = self.virtualDevices[deviceId];
+        var realLevel       = parseInt(realDevice.get('metrics:level'),10);
+        var virtualLevel    = parseInt(virtualDevice.get('metrics:level'),10);
+        var targetLevel     = parseInt(virtualDevice.get('metrics:target') || virtualLevel,10);
+
+        // Set target level
+        if (virtualLevel !== targetLevel
+            && Math.abs(virtualLevel - targetLevel) >= self.diff) {
+            self.log('Detected target mismatch for '+deviceId+'. Now moving');
+            self.moveDevice(deviceId,targetLevel);
+        }
+        self.pollDevice(deviceId);
     });
 };
 
@@ -366,6 +382,7 @@ DeviceMove.prototype.pollDevice = function(deviceId) {
     }
     var updateTime      = deviceObject.get('updateTime');
     if ((updateTime + pollInterval) < currentTime) {
+        self.log('Polling device '+deviceObject.id);
         deviceObject.performCommand("update");
     }
 };
@@ -410,7 +427,7 @@ DeviceMove.prototype.checkDevice = function(deviceId,args) {
     if (virtualLevel !== targetLevel
         && Math.abs(virtualLevel - targetLevel) >= self.diff) {
         self.log('Detected target mismatch for '+deviceId+'. Now moving');
-        self.moveDevice(virtualDevice,targetLevel);
+        self.moveDevice(deviceId,targetLevel);
     }
 };
 
