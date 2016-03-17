@@ -357,7 +357,6 @@ DeviceMove.prototype.checkAllDevices = function() {
     _.each(self.config.devices,function(deviceEntry) {
         var deviceId        = deviceEntry.device;
         var virtualDevice   = self.virtualDevices[deviceId];
-        var realLevel       = parseInt(realDevice.get('metrics:level'),10);
         var virtualLevel    = parseInt(virtualDevice.get('metrics:level'),10);
         var targetLevel     = parseInt(virtualDevice.get('metrics:target') || virtualLevel,10);
 
