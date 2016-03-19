@@ -121,7 +121,7 @@ DeviceMove.prototype.initCallback = function() {
                     delay = false; 
                 }
                 this.set('metrics:target',newLevel,{ silent: true });
-                self.log('Got command '+command+' for '+deviceId+': Set from '+currentLevel+' to '+newLevel+(delay) ? 'with delay':'without delay');
+                self.log('Got command '+command+' for '+deviceId+': Set from '+currentLevel+' to '+newLevel+((delay) ? 'with delay':'without delay'));
                 if (delay) {
                     self.delay.replace(
                         deviceId,
