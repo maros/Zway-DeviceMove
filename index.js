@@ -390,10 +390,12 @@ DeviceMove.prototype.checkDevice = function(deviceId,args) {
     var realLevel       = parseInt(realDevice.get('metrics:level'),10);
     var virtualLevel    = parseInt(virtualDevice.get('metrics:level'),10);
     var targetLevel     = parseInt(virtualDevice.get('metrics:target') || virtualLevel,10);
+    virtualLevel        = Math.min(virtualLevel,100);
+    targetLevel         = Math.min(targetLevel,100);
     var setLevel;
     
     // Detect full open
-    if (self.config.report === 'open' && realLevel === 255) {
+    if (self.config.report === 'open' && realLevel >= 99) {
         self.setStatus(deviceId,255);
     // Detect full close
     } else if (self.config.report === 'close' && realLevel === 0) {
