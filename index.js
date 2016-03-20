@@ -64,6 +64,8 @@ DeviceMove.prototype.initCallback = function() {
             deviceIcon  = realDevice.get('metrics:icon');
         } else if (icon === 'blind') {
             deviceIcon = 'blinds';
+        } else {
+            deviceIcon = icon;
         }
         
         title = title.replace(/\s*\[raw\]\s*/,"");
@@ -83,8 +85,7 @@ DeviceMove.prototype.initCallback = function() {
             },
             overlay: {
                 deviceType: 'switchMultilevel',
-                deviceSubType: realDevice.get('deviceSubType'),
-                //probeType: probeType,
+                probeType: realDevice.get('probeType'),
                 tags: realDevice.get('tags'),
                 location: realDevice.get('location'),
                 metrics: {
