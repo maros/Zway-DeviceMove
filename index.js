@@ -207,17 +207,6 @@ DeviceMove.prototype.setStatus = function(deviceId,level) {
     
     // Set virtual device
     virtualDevice.set('metrics:level',level);
-    if (self.config.icon === 'window') {
-        var status;
-        if (level === 0) {
-            status = 'down';
-        } else if (level === 255) {
-            status = 'up';
-        } else {
-            status = 'half';
-        }
-        virtualDevice.set('metrics:icon',self.imagePath+"/window-"+status+".png");
-    }
 };
 
 DeviceMove.prototype.moveDevice = function(deviceId,level) {
