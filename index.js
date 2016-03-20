@@ -359,7 +359,9 @@ DeviceMove.prototype.checkAllDevices = function() {
         var virtualDevice   = self.virtualDevices[deviceId];
         var virtualLevel    = parseInt(virtualDevice.get('metrics:level'),10);
         var targetLevel     = parseInt(virtualDevice.get('metrics:target') || virtualLevel,10);
-
+        virtualLevel        = Math.min(virtualLevel,100);
+        targetLevel         = Math.min(targetLevel,100);
+        
         // Set target level
         if (virtualLevel !== targetLevel
             && Math.abs(virtualLevel - targetLevel) >= self.diff) {
