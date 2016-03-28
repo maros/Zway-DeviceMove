@@ -250,6 +250,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
         if (relatedDevice === null) {
             self.error('Related device not found '+deviceEntry.relatedDevice);
         } else {
+            // Get related device level
             var relatedLevel = relatedDevice.get('metrics:level');
             if (typeof(relatedLevel) === 'string'
                 && relatedLevel === 'on') {
@@ -260,18 +261,31 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
             } else {
                 relatedLevel = parseInt(relatedLevel,10);
             }
+            // Fix level
             if (relatedLevel >= 99) {
                 relatedLevel = 100;
             }
+            // Related level
             if (self.config.relatedDeviceComparison === 'gt'
                 && relatedLevel > self.config.relatedDeviceLimit) {
-                newLevel = Math.max(newLevel,self.config.deviceLimit);
+                if (oldLevel < self.config.deviceLimit) {
+                    newLevel = oldLevel;
+                } else {
+                    newLevel = Math.max(newLevel,self.config.deviceLimit);
+                }
             } else if (self.config.relatedDeviceComparison === 'lt'
                 && relatedLevel < self.config.relatedDeviceLimit) {
-                newLevel = Math.min(newLevel,self.config.deviceLimit);
+                if (oldLevel > self.config.deviceLimit) {
+                    newLevel = oldLevel;
+                } else {
+                    newLevel = Math.min(newLevel,self.config.deviceLimit);
+                }
             }
-            
-            if (commandLevel !== newLevel) {
+            // Check new level
+            if (newLevel === oldLevel) {
+                self.log('Not movining due to related device at '+relatedLevel);
+                return;
+            } else if (commandLevel !== newLevel) {
                 self.log('Constrained level to '+newLevel+' due to related device at '+relatedLevel);
             }
         }
