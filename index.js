@@ -85,7 +85,7 @@ DeviceMove.prototype.initCallback = function() {
             },
             overlay: {
                 deviceType: 'switchMultilevel',
-                probeType: realDevice.get('probeType'),
+                probeType: 'motor',
                 tags: realDevice.get('tags'),
                 location: realDevice.get('location'),
                 metrics: {
