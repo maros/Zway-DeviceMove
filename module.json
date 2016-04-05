@@ -83,8 +83,10 @@
             "helper" : "__related_device_comparison_helper__",
             "label" : "__related_device_comparison_label__",
             "optionLabels" : [
-               ">=",
-               "<="
+               "__related_device_gt__",
+               "__related_device_lt__",
+               "__related_device_gt_strict__",
+               "__related_device_lt_strict__"
             ],
             "order" : 5
          },
@@ -170,7 +172,9 @@
             "dependencies" : "relatedCheck",
             "enum" : [
                "gt",
-               "lt"
+               "lt",
+               "gt_strict",
+               "lt_strict"
             ],
             "required" : true,
             "type" : "select"

@@ -265,17 +265,20 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
             if (relatedLevel >= 99) {
                 relatedLevel = 100;
             }
+            
             // Related level
-            if (self.config.relatedDeviceComparison === 'gt'
+            if ((self.config.relatedDeviceComparison === 'gt' || self.config.relatedDeviceComparison === 'gt_strict')
                 && relatedLevel > self.config.relatedDeviceLimit) {
-                if (oldLevel < self.config.deviceLimit) {
+                if (oldLevel < self.config.deviceLimit
+                    && self.config.relatedDeviceComparison === 'gt_strict') {
                     newLevel = oldLevel;
                 } else {
                     newLevel = Math.max(newLevel,self.config.deviceLimit);
                 }
-            } else if (self.config.relatedDeviceComparison === 'lt'
+            } else if ((self.config.relatedDeviceComparison === 'lt' || self.config.relatedDeviceComparison === 'lt_strict')
                 && relatedLevel < self.config.relatedDeviceLimit) {
-                if (oldLevel > self.config.deviceLimit) {
+                if (oldLevel > self.config.deviceLimit
+                    && self.config.relatedDeviceComparison === 'lt_strict') {
                     newLevel = oldLevel;
                 } else {
                     newLevel = Math.min(newLevel,self.config.deviceLimit);
