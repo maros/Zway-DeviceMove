@@ -1,3 +1,21 @@
+1.06 2016 Apr 20, Wed
+    * Comparison strict and lax mode
+    * Do not move device if already beyond related device limit
+    * Remove special handling of window icons
+    * Set probeType
+    * Ignore levels > 100 when checking for target level
+    * Fix log message
+    * Remove useless and broken code
+    * Store device target and move there once possible
+    * Update icon name
+    * Set target level
+    * Set back location and tags to real device
+    * Set maxdiff globally
+    * Fix check for definedness
+    * Add basic stop command
+    * Update installation howto
+    * Update readme
+
 1.05 2016 Jan 22, Fri
     * Add doc link
     * Rename title/description key to make module work in appstore
