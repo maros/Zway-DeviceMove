@@ -143,7 +143,7 @@ DeviceMove.prototype.initCallback = function() {
         // Build, register and call check callback
         var callback = _.bind(self.checkDevice,self,deviceId);
         realDevice.on('change:metrics:level',callback);
-        callback();
+        setTimeout(callback,1000*5);
         self.callbacks[deviceId] = callback;
     });
 };
@@ -248,7 +248,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
         && typeof(deviceEntry.relatedDevice) !== 'undefined') {
         var relatedDevice = self.controller.devices.get(deviceEntry.relatedDevice);
         if (relatedDevice === null) {
-            self.error('Related device not found '+deviceEntry.relatedDevice);
+            self.error('Related device for '+deviceId+' not found '+deviceEntry.relatedDevice);
         } else {
             // Get related device level
             var relatedLevel = relatedDevice.get('metrics:level');
