@@ -4,7 +4,8 @@
    "defaults" : {
       "description" : "__m_descr__",
       "icon" : "default",
-      "title" : "__m_title__"
+      "title" : "__m_title__",
+      "devices": []
    },
    "dependencies" : [
       "BaseModule"
