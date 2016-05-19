@@ -8,7 +8,7 @@
    "icon_label" : "Icon",
    "icon_multilevel" : "Dimmer",
    "icon_window" : "Fenster",
-   "m_descr" : "Bewegt Stellmotoren wie Fensteröffner oder Jalousies anhand von Zeit Informationen an die gewünschte Position. This module can also ensure that two automation devices operating on the same physical object (ie. window opener and blinds motor mounted on the same window) do not interfere with eachother.<br>Siehe <a href=https://github.com/maros/Zway-DeviceMove/blob/master/README.md>github.com/maros/Zway-DeviceMove</a> für detailliertere Dokumentation.",
+   "m_descr" : "Bewegt Stellmotoren wie Fensteröffner oder Jalousies anhand von Zeit Informationen an die gewünschte Position. Dieses Modul stellt außerdem sicher dass mehrere Geräte die am selben physischen Objekt agieren (zB. Fensteröffner und Jalousie am selben Fenster) sich nicht gegenseitig in die Quere kommen.<br>Siehe <a href=https://github.com/maros/Zway-DeviceMove/blob/master/README.md>github.com/maros/Zway-DeviceMove</a> für detailliertere Dokumentation.",
    "m_title" : "Stellmotoren anhand einer Zeitvorgabe bewegen",
    "related_check_helper" : "Prüft die Position von zusammengehörigen Geräten, die auf dem selben physischen Gegenstand operieren. Sichert zu dass zb. eine Rollo nicht über eine gewissen Position geschlossen werden kann wenn ein zusammengehöriger Fensteröffner das Fenster bereits geöffnet hat. Binäre Sensoren können ebenfalls als zusammengehörige Geräte eingetragen werden.",
    "related_check_label" : "Überpüfung von zusammengehörigen Geräten",
