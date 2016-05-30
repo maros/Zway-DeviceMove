@@ -15,7 +15,6 @@ function DeviceMove (id, controller) {
     
     this.virtualDevices = {};
     this.callbacks      = {};
-    this.diff           = 10;
     this.delay          = undefined;
     this.lock           = undefined;
     this.timer          = undefined;
@@ -33,6 +32,7 @@ DeviceMove.prototype.init = function (config) {
     DeviceMove.super_.prototype.init.call(this, config);
     var self = this;
     
+    self.difference     = self.config.difference || 10;
     self.delay          = new TimeoutManager(self);
     self.lock           = new TimeoutManager(self);
     self.timer          = setInterval(
@@ -316,7 +316,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
         realDevice.set('metrics:level',0);
     } else {
         var diffLevel = Math.abs(oldLevel - newLevel);
-        if (diffLevel < self.diff) {
+        if (diffLevel < self.difference) {
             return;
         }
         var deviceTime  = deviceEntry[(oldLevel > newLevel) ? 'timeDown':'timeUp'];
@@ -371,7 +371,7 @@ DeviceMove.prototype.checkAllDevices = function() {
         
         // Set target level
         if (virtualLevel !== targetLevel
-            && Math.abs(virtualLevel - targetLevel) >= self.diff) {
+            && Math.abs(virtualLevel - targetLevel) >= self.difference) {
             self.log('Detected target mismatch for '+deviceId+'. Now moving');
             self.moveDevice(deviceId,targetLevel);
         }
@@ -435,7 +435,7 @@ DeviceMove.prototype.checkDevice = function(deviceId,args) {
     
     // Set target level
     if (virtualLevel !== targetLevel
-        && Math.abs(virtualLevel - targetLevel) >= self.diff) {
+        && Math.abs(virtualLevel - targetLevel) >= self.difference) {
         self.log('Detected target mismatch for '+deviceId+'. Now moving');
         self.moveDevice(deviceId,targetLevel);
     }

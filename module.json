@@ -5,7 +5,8 @@
       "description" : "__m_descr__",
       "icon" : "default",
       "title" : "__m_title__",
-      "devices": []
+      "devices": [],
+      "difference": 10
    },
    "dependencies" : [
       "BaseModule"
@@ -16,13 +17,18 @@
    "moduleName" : "DeviceMove",
    "options" : {
       "fields" : {
+         "difference": {
+            "helper" : "__difference_helper__",
+            "label" : "__difference_label__",
+            "order" : 4
+         },
          "deviceLimit" : {
             "dependencies" : {
                "relatedCheck" : true
             },
             "helper" : "__device_limit_helper__",
             "label" : "__device_limit_label__",
-            "order" : 7
+            "order" : 8
          },
          "devices" : {
             "fields" : {
@@ -74,7 +80,7 @@
             "default" : false,
             "helper" : "__related_check_helper__",
             "label" : "__related_check_label__",
-            "order" : 4,
+            "order" : 5,
             "type" : "checkbox"
          },
          "relatedDeviceComparison" : {
@@ -89,7 +95,7 @@
                "__related_device_gt_strict__",
                "__related_device_lt_strict__"
             ],
-            "order" : 5
+            "order" : 6
          },
          "relatedDeviceLimit" : {
             "dependencies" : {
@@ -97,7 +103,7 @@
             },
             "helper" : "__related_device_limit_helper__",
             "label" : "__related_device_limit_label__",
-            "order" : 6
+            "order" : 7
          },
          "report" : {
             "helper" : "__report_helper__",
@@ -117,6 +123,12 @@
    },
    "schema" : {
       "properties" : {
+         "difference": {
+            "maximum" : 99,
+            "minimum" : 1,
+            "required" : true,
+            "type" : "integer"
+         },
          "deviceLimit" : {
             "dependencies" : "relatedCheck",
             "maximum" : 255,
