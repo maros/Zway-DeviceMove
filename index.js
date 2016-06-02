@@ -266,7 +266,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
                 relatedLevel = 100;
             }
             
-            // Related level
+            // Related level - gt
             if ((self.config.relatedDeviceComparison === 'gt' || self.config.relatedDeviceComparison === 'gt_strict')
                 && relatedLevel > self.config.relatedDeviceLimit) {
                 if (oldLevel < self.config.deviceLimit
@@ -275,6 +275,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
                 } else {
                     newLevel = Math.max(newLevel,self.config.deviceLimit);
                 }
+            // Related level - lt
             } else if ((self.config.relatedDeviceComparison === 'lt' || self.config.relatedDeviceComparison === 'lt_strict')
                 && relatedLevel < self.config.relatedDeviceLimit) {
                 if (oldLevel > self.config.deviceLimit
@@ -345,15 +346,15 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
 
 DeviceMove.prototype.stopDevice = function(deviceId) {
     var self        = this;
-    var deviceObject      = self.controller.devices.get(deviceId);
+    var realDevice  = self.controller.devices.get(deviceId);
     self.lock.add(
         deviceId,
         self.checkDevice,
         (5*1000),
         deviceId
     );
-    deviceObject.performCommand("stop");
-    deviceObject.performCommand("update");
+    realDevice.performCommand("stop");
+    realDevice.performCommand("update");
     //self.pollDevice(deviceId);
 };
 
@@ -384,14 +385,14 @@ DeviceMove.prototype.pollDevice = function(deviceId) {
     
     var pollInterval    = 10*60*1000;
     var currentTime     = Math.floor(new Date().getTime() / 1000);
-    var deviceObject    = self.controller.devices.get(deviceId);
-    if (deviceObject === null) {
+    var realDevice      = self.controller.devices.get(deviceId);
+    if (realDevice === null) {
         return;
     }
-    var updateTime      = deviceObject.get('updateTime');
+    var updateTime      = realDevice.get('updateTime');
     if ((updateTime + pollInterval) < currentTime) {
-        self.log('Polling device '+deviceObject.id);
-        deviceObject.performCommand("update");
+        self.log('Polling device '+realDevice.id);
+        realDevice.performCommand("update");
     }
 };
 
@@ -435,7 +436,7 @@ DeviceMove.prototype.checkDevice = function(deviceId,args) {
     
     // Set target level
     if (virtualLevel !== targetLevel
-        && Math.abs(virtualLevel - targetLevel) >= self.difference) {
+        && Math.abs(virtualLevel - targetLevel) >= self.diff) {
         self.log('Detected target mismatch for '+deviceId+'. Now moving');
         self.moveDevice(deviceId,targetLevel);
     }
