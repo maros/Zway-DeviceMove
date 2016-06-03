@@ -1,7 +1,9 @@
 {
    "device_limit_helper" : "Positions Limit für dieses Gerät wenn ein zusammengehöriges Gerät bereits geöffnet ist",
-   "device_limit_label" : "Positions limit",
+   "device_limit_label" : "Positions Limit",
    "devices_label" : "Geräte",
+   "difference_helper" : "Bewegt das Gerät nicht wenn die Differenz zwischen Ziel uns Ist-Wert geringer als dieser Wert ist",
+   "difference_label" : "Minimale Differenz",
    "icon_blind" : "Rollo",
    "icon_default" : "Standard (Selbes Icon wie das Gerät)",
    "icon_helper" : "Setzt das Icon für das virtuelle Gerät.",

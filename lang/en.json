@@ -1,7 +1,9 @@
 {
-   "device_limit_helper" : "Device limit for this device",
+   "device_limit_helper" : "Limit for this device when related device is above related device limit",
    "device_limit_label" : "Device limit",
    "devices_label" : "Devices",
+   "difference_helper" : "Do not move device when difference between current and target position is less than this value",
+   "difference_label" : "Min difference",
    "icon_blind" : "Blind",
    "icon_default" : "Default (Take from device)",
    "icon_helper" : "Select the icon to be used for the virtual devices",
