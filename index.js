@@ -32,7 +32,7 @@ DeviceMove.prototype.init = function (config) {
     DeviceMove.super_.prototype.init.call(this, config);
     var self = this;
     
-    self.difference     = self.config.difference || 10;
+    self.difference     = parseInt(self.config.difference || 20);
     self.delay          = new TimeoutManager(self);
     self.lock           = new TimeoutManager(self);
     self.timer          = setInterval(
@@ -364,11 +364,16 @@ DeviceMove.prototype.checkAllDevices = function() {
     
     _.each(self.config.devices,function(deviceEntry) {
         var deviceId        = deviceEntry.device;
+        var realDevice      = self.controller.devices.get(deviceId);
         var virtualDevice   = self.virtualDevices[deviceId];
         var virtualLevel    = parseInt(virtualDevice.get('metrics:level'),10);
-        var targetLevel     = parseInt(virtualDevice.get('metrics:target') || virtualLevel,10);
+        var targetLevel     = parseInt(virtualDevice.get('metrics:target'),10);
+        if (isNaN(targetLevel)) {
+            targetLevel = virtualLevel ;
+        }
         virtualLevel        = Math.min(virtualLevel,100);
         targetLevel         = Math.min(targetLevel,100);
+        self.log('Checking device'+deviceId+': '+virtualLevel+'-'+targetLevel+':'+Math.abs(virtualLevel - targetLevel));
         
         // Set target level
         if (virtualLevel !== targetLevel
