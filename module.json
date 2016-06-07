@@ -3,10 +3,10 @@
    "category" : "device_enhancements",
    "defaults" : {
       "description" : "__m_descr__",
+      "devices" : [],
+      "difference" : 10,
       "icon" : "default",
-      "title" : "__m_title__",
-      "devices": [],
-      "difference": 10
+      "title" : "__m_title__"
    },
    "dependencies" : [
       "BaseModule"
@@ -17,11 +17,6 @@
    "moduleName" : "DeviceMove",
    "options" : {
       "fields" : {
-         "difference": {
-            "helper" : "__difference_helper__",
-            "label" : "__difference_label__",
-            "order" : 4
-         },
          "deviceLimit" : {
             "dependencies" : {
                "relatedCheck" : true
@@ -64,6 +59,11 @@
             },
             "label" : "__devices_label__",
             "order" : 1
+         },
+         "difference" : {
+            "helper" : "__difference_helper__",
+            "label" : "__difference_label__",
+            "order" : 4
          },
          "icon" : {
             "helper" : "__icon_helper__",
@@ -123,12 +123,6 @@
    },
    "schema" : {
       "properties" : {
-         "difference": {
-            "maximum" : 99,
-            "minimum" : 1,
-            "required" : true,
-            "type" : "integer"
-         },
          "deviceLimit" : {
             "dependencies" : "relatedCheck",
             "maximum" : 255,
@@ -166,6 +160,12 @@
             "minItems" : 1,
             "required" : true,
             "type" : "array"
+         },
+         "difference" : {
+            "maximum" : 99,
+            "minimum" : 1,
+            "required" : true,
+            "type" : "integer"
          },
          "icon" : {
             "enum" : [
@@ -213,5 +213,5 @@
       "type" : "object"
    },
    "singleton" : false,
-   "version" : 1.06
+   "version" : "1.07"
 }

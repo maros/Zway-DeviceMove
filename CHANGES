@@ -1,3 +1,10 @@
+1.07 2016 Jun 07, Tue
+    * Fix target level handling
+    * Improve/add labels/help texts
+    * Add configurable difference
+    * Set defaults
+    * Delay related check on init since other device might not be ready
+
 1.06 2016 Apr 20, Wed
     * Comparison strict and lax mode
     * Do not move device if already beyond related device limit
