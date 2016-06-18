@@ -380,8 +380,10 @@ DeviceMove.prototype.checkAllDevices = function() {
         // Set target level
         if (virtualLevel !== targetLevel
             && Math.abs(virtualLevel - targetLevel) >= self.difference) {
-            self.log('Detected target mismatch for '+deviceId+'. Now moving');
-            self.moveDevice(deviceId,targetLevel);
+            setTimeout(function() {
+                self.log('Detected target mismatch for '+deviceId+'. Now moving');
+                self.moveDevice(deviceId,targetLevel);
+            },1000*30);
         }
         self.pollDevice(deviceId);
     });
