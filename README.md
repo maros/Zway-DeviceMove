@@ -36,6 +36,10 @@ Time it takes to move from fully closed to fully opened
 
 Related device. See relatedCheck for detailed explanation.
 
+## difference
+
+Do not move device when difference between current and target position is less than this value
+
 ## icon
 
 Select which icon to use for the virtual device. Default (taken from the 

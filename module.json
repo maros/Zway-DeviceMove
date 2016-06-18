@@ -162,7 +162,7 @@
             "type" : "array"
          },
          "difference" : {
-            "maximum" : 99,
+            "maximum" : 50,
             "minimum" : 1,
             "required" : true,
             "type" : "integer"
