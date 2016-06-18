@@ -89,7 +89,9 @@ DeviceMove.prototype.initCallback = function() {
                 tags: realDevice.get('tags'),
                 location: realDevice.get('location'),
                 metrics: {
-                    icon: deviceIcon
+                    icon: deviceIcon,
+                    min: 0,
+                    max: 99,
                 }
             },
             handler: function(command,args) {
