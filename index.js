@@ -32,7 +32,8 @@ DeviceMove.prototype.init = function (config) {
     DeviceMove.super_.prototype.init.call(this, config);
     var self = this;
     
-    self.difference     = parseInt(self.config.difference || 20);
+    self.difference     = parseInt(self.config.difference || 10);
+    self.step           = parseInt(self.config.step || 1);
     self.delay          = new TimeoutManager(self);
     self.lock           = new TimeoutManager(self);
     self.timer          = setInterval(
@@ -92,6 +93,7 @@ DeviceMove.prototype.initCallback = function() {
                     icon: deviceIcon,
                     min: 0,
                     max: 99,
+                    step: self.config.step
                 }
             },
             handler: function(command,args) {
@@ -108,11 +110,15 @@ DeviceMove.prototype.initCallback = function() {
                     newLevel = 0;
                 } else if ("exact" === command || "exactSmooth" === command) {
                     newLevel = args.level;
+                    newLevel = Math.round(newLevel / self.config.step) * self.config.step;
+                    if (newLevel === 0 && args.level > 0) {
+                        newLevel = self.config.step;
+                    }
                     delay = true;
                 } else if ("increase" === command) {
-                    newLevel = currentLevel + 10;
+                    newLevel = currentLevel + self.config.step;
                 } else if ("decrease" === command) {
-                    newLevel = currentLevel - 10;
+                    newLevel = currentLevel - self.config.step;
                 } else if ("stop" === command) {
                     // TODO figure out if we are currently moving, and try to calc new position
                     var realDevice = self.controller.devices.get(deviceId);

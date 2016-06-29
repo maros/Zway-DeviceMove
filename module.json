@@ -5,6 +5,7 @@
       "description" : "__m_descr__",
       "devices" : [],
       "difference" : 10,
+      "step": 1,
       "icon" : "default",
       "title" : "__m_title__"
    },
@@ -23,7 +24,7 @@
             },
             "helper" : "__device_limit_helper__",
             "label" : "__device_limit_label__",
-            "order" : 8
+            "order" : 9
          },
          "devices" : {
             "fields" : {
@@ -65,6 +66,11 @@
             "label" : "__difference_label__",
             "order" : 4
          },
+         "step" : {
+            "helper" : "__step_helper__",
+            "label" : "__step_label__",
+            "order" : 5
+         },
          "icon" : {
             "helper" : "__icon_helper__",
             "label" : "__icon_label__",
@@ -80,7 +86,7 @@
             "default" : false,
             "helper" : "__related_check_helper__",
             "label" : "__related_check_label__",
-            "order" : 5,
+            "order" : 6,
             "type" : "checkbox"
          },
          "relatedDeviceComparison" : {
@@ -95,7 +101,7 @@
                "__related_device_gt_strict__",
                "__related_device_lt_strict__"
             ],
-            "order" : 6
+            "order" : 7
          },
          "relatedDeviceLimit" : {
             "dependencies" : {
@@ -103,7 +109,7 @@
             },
             "helper" : "__related_device_limit_helper__",
             "label" : "__related_device_limit_label__",
-            "order" : 7
+            "order" : 8
          },
          "report" : {
             "helper" : "__report_helper__",
@@ -166,6 +172,19 @@
             "minimum" : 1,
             "required" : true,
             "type" : "integer"
+         },
+         "step" : {
+            "enum" : [
+               1,
+               2,
+               5,
+               10,
+               20,
+               25,
+               50
+            ],
+            "required" : true,
+            "type" : "select"
          },
          "icon" : {
             "enum" : [
