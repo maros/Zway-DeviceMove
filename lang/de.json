@@ -28,6 +28,8 @@
    "report_label_close" : "Wenn vollständig geschlossen",
    "report_label_none" : "Keine Meldung",
    "report_label_open" : "Wenn vollständig geöffnet",
+   "step_helper" : "MISSING",
+   "step_label" : "MISSING",
    "time_down_helper" : "Zeit (in Sekunden) um das Gerät vollständig zu schließen",
    "time_down_label" : "Zeit zum Schließen",
    "time_up_helper" : "Zeit (in Sekunden) um das Gerät vollständig zu öffnen",
