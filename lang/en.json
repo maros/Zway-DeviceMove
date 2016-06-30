@@ -28,7 +28,7 @@
    "report_label_close" : "When fully closed",
    "report_label_none" : "None",
    "report_label_open" : "When fully opened",
-   "step_helper" : "Sets the steps for moving the device",
+   "step_helper" : "Sets the steps for moving the deviceª",
    "step_label" : "Steps",
    "time_down_helper" : "Time in seconds to fully close device",
    "time_down_label" : "Device close time",
