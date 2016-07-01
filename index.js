@@ -325,7 +325,8 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
         realDevice.set('metrics:level',0);
     } else {
         var diffLevel = Math.abs(oldLevel - newLevel);
-        if (diffLevel < self.difference) {
+        if (diffLevel < self.difference && oldLevel !== 0) {
+            self.log('Not movining due minimum difference');
             return;
         }
         var deviceTime  = deviceEntry[(oldLevel > newLevel) ? 'timeDown':'timeUp'];
