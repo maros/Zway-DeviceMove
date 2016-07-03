@@ -1,3 +1,9 @@
+1.08 2016 Jul 03, Sun
+    * Fix difference check
+    * Configurable steps
+    * Delayed fix movement
+    * Set min/max
+
 1.07 2016 Jun 07, Tue
     * Fix target level handling
     * Improve/add labels/help texts

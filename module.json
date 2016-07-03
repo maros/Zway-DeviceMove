@@ -5,8 +5,8 @@
       "description" : "__m_descr__",
       "devices" : [],
       "difference" : 10,
-      "step": 1,
       "icon" : "default",
+      "step" : 1,
       "title" : "__m_title__"
    },
    "dependencies" : [
@@ -66,11 +66,6 @@
             "label" : "__difference_label__",
             "order" : 4
          },
-         "step" : {
-            "helper" : "__step_helper__",
-            "label" : "__step_label__",
-            "order" : 5
-         },
          "icon" : {
             "helper" : "__icon_helper__",
             "label" : "__icon_label__",
@@ -120,6 +115,11 @@
                "__report_label_none__"
             ],
             "order" : 3
+         },
+         "step" : {
+            "helper" : "__step_helper__",
+            "label" : "__step_label__",
+            "order" : 5
          }
       }
    },
@@ -173,19 +173,6 @@
             "required" : true,
             "type" : "integer"
          },
-         "step" : {
-            "enum" : [
-               1,
-               2,
-               5,
-               10,
-               20,
-               25,
-               50
-            ],
-            "required" : true,
-            "type" : "select"
-         },
          "icon" : {
             "enum" : [
                "default",
@@ -226,11 +213,24 @@
             ],
             "required" : true,
             "type" : "select"
+         },
+         "step" : {
+            "enum" : [
+               1,
+               2,
+               5,
+               10,
+               20,
+               25,
+               50
+            ],
+            "required" : true,
+            "type" : "select"
          }
       },
       "required" : true,
       "type" : "object"
    },
    "singleton" : false,
-   "version" : "1.07"
+   "version" : "1.08"
 }
