@@ -1,21 +1,21 @@
 # Zway-DeviceMove
 
-Move devices like blinds or windows based on timing information to a selected 
-position. 
+Move devices like blinds or windows based on timing information to a selected
+position.
 
 Some devices cannot be set to a specific position, but only can be controlled
 by moving them up or down. This module tries to circumvent this limitation by
-creating a virtual multilevel switch device instead of the original device, 
+creating a virtual multilevel switch device instead of the original device,
 that translates the user-select position into timing information.
 
 For example if a device usually takes 40 seconds to move from fully closed to
-fully opened state, then moving the device to 50% requires sending the 
+fully opened state, then moving the device to 50% requires sending the
 move-up command, followed by a stop command 20 seconds later. The module also
 tries to detect manual movement of the device.
 
 Furthermore this virtual device can check related devices. When two automation
 devices operate on the same physical object (eg. blind and window chain drive)
-, and interfere witch each other then checking for related devices ensures 
+, and interfere witch each other then checking for related devices ensures
 proper functionality and prevents damage.
 
 # Configuration
@@ -42,14 +42,14 @@ Do not move device when difference between current and target position is less t
 
 ## icon
 
-Select which icon to use for the virtual device. Default (taken from the 
+Select which icon to use for the virtual device. Default (taken from the
 parent device), blinds, windows and dimmer icons are available.
 
 ## report
 
-Indicates at which position correct device positioning is reported. 
+Indicates at which position correct device positioning is reported.
 Eg. A blind only reports 0% when fully closed, or 100% when partially or fully
-opened. In this case the report setting needs to be set to report-'close', 
+opened. In this case the report setting needs to be set to report-'close',
 because only the fully closed state is reported correctly.
 
 ## relatedCheck
@@ -59,7 +59,7 @@ on the same physical object, and interfere witch each other then checking
 for related devices ensures proper functionality and prevents damage.
 Eg. Closing a blind is not possible when the window was opened by a chain
 drive. On the other hand windows should not be opened above a certain
-limit with closed blinds. This check is able to limit the movement of the 
+limit with closed blinds. This check is able to limit the movement of the
 managed devices accordingly.
 
 ## relatedDeviceLimit, relatedDeviceComparison
@@ -70,7 +70,7 @@ is limited by the deviceLimit
 
 ## deviceLimit
 
-Defines a limit for the current device if the related device position is 
+Defines a limit for the current device if the related device position is
 within a certain limit.
 
 # Events
@@ -87,11 +87,11 @@ device is hidden.
 Install the BaseModule from https://github.com/maros/Zway-BaseModule first
 
 The prefered way of installing this module is via the "Zwave.me App Store"
-available in 2.2.0 and higher. For stable module releases no access token is 
-required. If you want to test the latest pre-releases use 'k1_beta' as 
+available in 2.2.0 and higher. For stable module releases no access token is
+required. If you want to test the latest pre-releases use 'k1_beta' as
 app store access token.
 
-For developers and users of older Zway versions installation via git is 
+For developers and users of older Zway versions installation via git is
 recommended.
 
 ```shell
@@ -115,7 +115,7 @@ git checkout -b master --track origin/master
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or any 
+the Free Software Foundation, either version 3 of the License, or any
 later version.
 
 This program is distributed in the hope that it will be useful,
