@@ -309,7 +309,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
         self.lock.add(
             deviceId,
             self.pollDevice,
-            (maxTime*2*1000),
+            (maxTime*1.1*1000),
             deviceId
         );
         realDevice.set('metrics:level',255);
@@ -319,7 +319,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
         self.lock.add(
             deviceId,
             self.pollDevice,
-            (maxTime*2*1000),
+            (maxTime*1.1*1000),
             deviceId
         );
         realDevice.set('metrics:level',0);
