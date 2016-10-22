@@ -1,3 +1,7 @@
+1.09 2016 Oct 22, Sat
+    * Calculate approximate position on device stop
+    * Shorter lock times
+
 1.08 2016 Jul 03, Sun
     * Fix difference check
     * Configurable steps
