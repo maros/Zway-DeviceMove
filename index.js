@@ -132,8 +132,11 @@ DeviceMove.prototype.initCallback = function() {
                         var stopLevel   = (oldLevel > currentLevel) ? (oldLevel - diffLevel) : (oldLevel + diffLevel);
                         self.log('Moved '+diffTime+'sec ('+stepTime+'sec/step) to '+stopLevel+' (from '+oldLevel+')');
                         this.set('metrics:action',null);
-                        this.set('metrics:target',null,{ silent: true });
-                        this.set('metrics:level',stopLevel);
+                        if (stopLevel >= 0 && stopLevel <= 99) {
+                            self.delay.clear(deviceId);
+                            this.set('metrics:target',null,{ silent: true });
+                            this.set('metrics:level',stopLevel,{ silent: true });
+                        }
                     }
                     var realDevice = self.controller.devices.get(deviceId);
                     realDevice.performCommand('stop');
@@ -149,7 +152,7 @@ DeviceMove.prototype.initCallback = function() {
                     self.delay.replace(
                         deviceId,
                         self.moveDevice,
-                        1000*2.5,
+                        1000*1.5,
                         deviceId,
                         newLevel
                     );
@@ -242,9 +245,9 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
         self.delay.replace(
             deviceId,
             self.moveDevice,
-            (1000*15),
+            (1000*10),
             deviceId,
-            level
+            level // Can produce racr condition!!
         );
         return;
     }
@@ -411,6 +414,9 @@ DeviceMove.prototype.checkAllDevices = function() {
         var virtualDevice   = self.virtualDevices[deviceId];
         var virtualLevel    = parseInt(virtualDevice.get('metrics:level'),10);
         var targetLevel     = parseInt(virtualDevice.get('metrics:target'),10);
+        if (self.lock.running(deviceId)) {
+            return;
+        }
         if (isNaN(targetLevel)) {
             targetLevel = virtualLevel ;
         }
@@ -441,6 +447,9 @@ DeviceMove.prototype.pollDevice = function(deviceId) {
     }
     var updateTime      = realDevice.get('updateTime');
     if ((updateTime + pollInterval) < currentTime) {
+        if (self.lock.running(realDevice.id)) {
+            return;
+        }
         self.log('Polling device '+realDevice.id);
         realDevice.performCommand("update");
     }
