@@ -1,7 +1,7 @@
 /*** DeviceMove Z-Way HA module *******************************************
 
 Version: 1.09
-(c) Maroš Kollár, 2015
+(c) Maroš Kollár, 2015-2017
 -----------------------------------------------------------------------------
 Author: Maroš Kollár <maros@k-1.com>
 Description:
@@ -482,11 +482,11 @@ DeviceMove.prototype.checkDevice = function(deviceId,args) {
         self.setStatus(deviceId,realLevel);
     // Correct partial open
     } else if (self.config.report === 'close' && realLevel > 0 && virtualLevel === 0) {
-        self.log('Detected status mismatch for '+deviceId+'. Now closed');
+        self.log('Detected status mismatch for '+deviceId+'. Now closed. Reporting '+realLevel);
         self.setStatus(deviceId,realLevel);
     // Correct partial close
     } else if (self.config.report === 'open' && realLevel === 0 && virtualLevel >= 99) {
-        self.log('Detected status mismatch for '+deviceId+'. Now opened');
+        self.log('Detected status mismatch for '+deviceId+'. Now opened. Reporting '+realLevel);
         self.setStatus(deviceId,realLevel);
     }
 
