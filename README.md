@@ -20,17 +20,17 @@ proper functionality and prevents damage.
 
 # Configuration
 
-## devices
-
-List of managed devices
-
 ## devices.device
 
-Device id
+Managed devices
 
-## devices.time
+## devices.timeUp
 
 Time it takes to move from fully closed to fully opened
+
+## devices.timeDown
+
+Time it takes to move from fully opened to fully closed
 
 ## devices.relatedDevice
 
