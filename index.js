@@ -326,9 +326,11 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
         newLevel = 255;
         self.lock.add(
             deviceId,
-            self.pollDevice,
-            (maxTime*1.1*1000),
-            deviceId
+            function() {
+                self.pollDevice(deviceId);
+                virtualDevice.set('metrics:level',newLevel);
+            },
+            (maxTime*1.1*1000)
         );
         virtualDevice.set('metrics:action',{
             startTime:  currentTime,
@@ -342,9 +344,11 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
         newLevel = 0;
         self.lock.add(
             deviceId,
-            self.pollDevice,
-            (maxTime*1.1*1000),
-            deviceId
+            function() {
+                self.pollDevice(deviceId);
+                virtualDevice.set('metrics:level',newLevel);
+            },
+            (maxTime*1.1*1000)
         );
         virtualDevice.set('metrics:action',{
             startTime:  currentTime,
@@ -366,9 +370,11 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
         newLevel        = parseInt((oldLevel < newLevel) ? oldLevel + diffLevel : oldLevel - diffLevel,10);
         self.lock.add(
             deviceId,
-            self.stopDevice,
-            (diffTime * 1000),
-            deviceId
+            function() {
+                self.stopDevice(deviceId);
+                virtualDevice.set('metrics:level',newLevel);
+            },
+            (diffTime * 1000)
         );
         virtualDevice.set('metrics:action',{
             startTime:  currentTime,
@@ -380,10 +386,6 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
     }
 
     realDevice.performCommand(moveCommand);
-
-    // Set status
-    virtualDevice.set('metrics:level',newLevel);
-
     self.setStatus(deviceId,newLevel);
 };
 
