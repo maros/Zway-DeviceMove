@@ -329,6 +329,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
             function() {
                 self.pollDevice(deviceId);
                 virtualDevice.set('metrics:level',newLevel);
+                self.stopDevice(deviceId);
             },
             (maxTime*1.1*1000)
         );
@@ -347,6 +348,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
             function() {
                 self.pollDevice(deviceId);
                 virtualDevice.set('metrics:level',newLevel);
+                self.stopDevice(deviceId);
             },
             (maxTime*1.1*1000)
         );
