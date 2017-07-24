@@ -130,10 +130,13 @@ DeviceMove.prototype.initCallback = function() {
                         var stepTime    = deviceEntry[(oldLevel > currentLevel) ? 'timeDown':'timeUp'] / 100;
                         var diffLevel   = parseInt(diffTime / stepTime,10);
                         var stopLevel   = (oldLevel > currentLevel) ? (oldLevel - diffLevel) : (oldLevel + diffLevel);
+                        stopLevel = Math.min(99, stopLevel);
+                        stopLevel = Math.max(0, stopLevel);
                         self.log('Moved '+diffTime+'sec ('+stepTime+'sec/step) to '+stopLevel+' (from '+oldLevel+')');
                         this.set('metrics:action',null);
                         if (stopLevel >= 0 && stopLevel <= 99) {
                             self.delay.clear(deviceId);
+                            self.lock.clear(deviceId);
                             this.set('metrics:target',null,{ silent: true });
                             this.set('metrics:level',stopLevel,{ silent: true });
                         }
@@ -329,6 +332,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
             function() {
                 self.pollDevice(deviceId);
                 virtualDevice.set('metrics:level',newLevel);
+                self.stopDevice(deviceId);
             },
             (maxTime*1.1*1000)
         );
@@ -347,6 +351,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
             function() {
                 self.pollDevice(deviceId);
                 virtualDevice.set('metrics:level',newLevel);
+                self.stopDevice(deviceId);
             },
             (maxTime*1.1*1000)
         );
