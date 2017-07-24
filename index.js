@@ -105,7 +105,7 @@ DeviceMove.prototype.initCallback = function() {
                 var newLevel;
                 var delay = false;
                 if (command === 'on' || command === 'up' || command === 'startUp' || command === 'upMax') {
-                    newLevel = 255;
+                    newLevel = 99;
                 } else if (command === 'off'|| command === 'down' || command === 'startDown') {
                     newLevel = 0;
                 } else if ("exact" === command || "exactSmooth" === command) {
@@ -133,13 +133,11 @@ DeviceMove.prototype.initCallback = function() {
                         stopLevel = Math.min(99, stopLevel);
                         stopLevel = Math.max(0, stopLevel);
                         self.log('Moved '+diffTime+'sec ('+stepTime+'sec/step) to '+stopLevel+' (from '+oldLevel+')');
-                        this.set('metrics:action',null);
-                        if (stopLevel >= 0 && stopLevel <= 99) {
-                            self.delay.clear(deviceId);
-                            self.lock.clear(deviceId);
-                            this.set('metrics:target',null,{ silent: true });
-                            this.set('metrics:level',stopLevel,{ silent: true });
-                        }
+                        this.set('metrics:action',null,{ silent: true });
+                        this.set('metrics:target',null,{ silent: true });
+                        this.set('metrics:level',stopLevel,{ silent: true });
+                        self.delay.clear(deviceId);
+                        self.lock.clear(deviceId);
                     }
                     var realDevice = self.controller.devices.get(deviceId);
                     realDevice.performCommand('stop');
@@ -230,7 +228,7 @@ DeviceMove.prototype.setStatus = function(deviceId,level) {
     level               = parseInt(level,10);
 
     if (level > 99) {
-        level = 255;
+        level = 99;
     }
 
     // Set virtual device
@@ -257,9 +255,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
 
     var virtualDevice   = self.virtualDevices[deviceId];
     var oldLevel        = virtualDevice.get('metrics:level');
-    if (oldLevel >= 99) {
-        oldLevel = 100;
-    }
+    oldLevel            = Math.min(oldLevel,99):
     var realDevice      = self.controller.devices.get(deviceId);
     var deviceEntry     = _.find(self.config.devices,function(deviceEntry) { return deviceEntry.device === deviceId; });
     if (deviceEntry === null) {
@@ -283,7 +279,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
             var relatedLevel = relatedDevice.get('metrics:level');
             if (typeof(relatedLevel) === 'string'
                 && relatedLevel === 'on') {
-                relatedLevel = 100;
+                relatedLevel = 99;
             } else if (typeof(relatedLevel) === 'string'
                 && relatedLevel === 'off') {
                 relatedLevel = 0;
@@ -291,9 +287,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
                 relatedLevel = parseInt(relatedLevel,10);
             }
             // Fix level
-            if (relatedLevel >= 99) {
-                relatedLevel = 100;
-            }
+            relatedLevel = Math.min(relatedLevel,99);
 
             // Related level - gt
             if ((self.config.relatedDeviceComparison === 'gt' || self.config.relatedDeviceComparison === 'gt_strict')
@@ -480,7 +474,7 @@ DeviceMove.prototype.checkDevice = function(deviceId,args) {
 
     // Detect full open
     if (self.config.report === 'open' && realLevel >= 99) {
-        self.setStatus(deviceId,255);
+        self.setStatus(deviceId,99);
     // Detect full close
     } else if (self.config.report === 'close' && realLevel === 0) {
         self.setStatus(deviceId,0);
