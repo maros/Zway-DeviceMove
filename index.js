@@ -255,7 +255,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
 
     var virtualDevice   = self.virtualDevices[deviceId];
     var oldLevel        = virtualDevice.get('metrics:level');
-    oldLevel            = Math.min(oldLevel,99):
+    oldLevel            = Math.min(oldLevel,99);
     var realDevice      = self.controller.devices.get(deviceId);
     var deviceEntry     = _.find(self.config.devices,function(deviceEntry) { return deviceEntry.device === deviceId; });
     if (deviceEntry === null) {
