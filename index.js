@@ -277,6 +277,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
         } else {
             // Get related device level
             var relatedLevel = relatedDevice.get('metrics:level');
+            var relatedRestrict = false;
             if (typeof(relatedLevel) === 'string'
                 && relatedLevel === 'on') {
                 relatedLevel = 99;
@@ -298,6 +299,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
                 } else {
                     newLevel = Math.max(newLevel,self.config.deviceLimit);
                 }
+                relatedRestrict = true;
             // Related level - lt
             } else if ((self.config.relatedDeviceComparison === 'lt' || self.config.relatedDeviceComparison === 'lt_strict')
                 && relatedLevel < self.config.relatedDeviceLimit) {
@@ -307,9 +309,11 @@ DeviceMove.prototype.moveDevice = function(deviceId,level) {
                 } else {
                     newLevel = Math.min(newLevel,self.config.deviceLimit);
                 }
+                relatedRestrict = true;
             }
             // Check new level
-            if (newLevel === oldLevel) {
+            if (relatedRestrict
+                && newLevel === oldLevel) {
                 self.log('Not movining due to related device at '+relatedLevel);
                 return;
             } else if (commandLevel !== newLevel) {
