@@ -69,9 +69,8 @@ DeviceMove.prototype.initCallback = function() {
             deviceIcon = icon;
         }
 
-        title = title.replace(/\s*\[raw\]\s*/,"");
-
         // Hide and rename device
+        title = title.replace(/\s*\[raw\]/,"");
         realDevice.set('metrics:title',title+' [raw]');
         realDevice.set('visibility', false);
 
@@ -422,8 +421,10 @@ DeviceMove.prototype.checkAllDevices = function() {
         if (self.lock.running(deviceId)) {
             return;
         }
-        if (isNaN(targetLevel)) {
+        if (typeof(targetLevel) === undefined || targetLevel === null) {
             targetLevel = virtualLevel ;
+        } else if (targetLevel === virtualLevel) {
+            virtualDevice.set('metrics:target',null);
         }
         virtualLevel        = Math.min(virtualLevel,100);
         targetLevel         = Math.min(targetLevel,100);
