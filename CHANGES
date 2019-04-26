@@ -1,3 +1,16 @@
+1.10 2019 Apr 26, Fri
+    * Fix handling of target key
+    * Reset metrics:target once level is at target
+    * Improve handling of related devices
+    * Unify handling of min/max level
+    * Merge pull request #2 from joel-ryden/master
+    * Set correct level and clear locks after stop command
+    * Send stop command to device even when in max states
+    * Set new level after movement is finished
+    * Update module documentation
+    * Update copyright
+    * Prevent race condition when device update would check a device during movement or while being locked after user interactio
+
 1.09 2016 Oct 22, Sat
     * Calculate approximate position on device stop
     * Shorter lock times
