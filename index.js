@@ -101,6 +101,12 @@ DeviceMove.prototype.initCallback = function() {
                     return;
                 }
                 var currentLevel = Math.min(100,this.get('metrics:level'));
+                var targetLevel = this.get('metrics:target');
+                if (targetLevel === undefined || targetLevel === null) {
+                    targetLevel = currentLevel;
+                } else {
+                    targetLevel = Math.min(100,targetLevel);
+                }
                 var step = parseInt(self.config.step || 1);
                 var newLevel;
                 var delay = false;
