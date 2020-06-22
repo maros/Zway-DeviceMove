@@ -96,6 +96,8 @@ DeviceMove.prototype.initCallback = function() {
                 }
             },
             handler: function(command,args) {
+                self.log('Got command '+command+' for '+ deviceId);
+
                 if (command === 'update') {
                     self.pollDevice(deviceId);
                     return;
@@ -110,6 +112,7 @@ DeviceMove.prototype.initCallback = function() {
                 var step = parseInt(self.config.step || 1);
                 var newLevel;
                 var delay = false;
+
                 if (command === 'on' || command === 'up' || command === 'startUp' || command === 'upMax') {
                     newLevel = 100;
                 } else if (command === 'off'|| command === 'down' || command === 'startDown') {
@@ -154,11 +157,18 @@ DeviceMove.prototype.initCallback = function() {
                     //self.log('Not moving device '+deviceId+'. Same level');
                     return;
                 }
-                if (newLevel === 0 || newLevel >= 99) {
+
+                // Sanitise values
+                if (newLevel <= 0) {
+                    newLevel = 0;
+                    delay = false;
+                } else if (newLevel >= 99) {
+                    newLevel = 100;
                     delay = false;
                 }
+
                 this.set('metrics:target',newLevel,{ silent: true });
-                self.log('Got command '+command+' for '+deviceId+': Set from '+currentLevel+' to '+newLevel+((delay) ? ' with delay':' without delay'));
+                self.log('Evaluated command '+command+' for '+deviceId+': Set from '+currentLevel+' to '+newLevel+((delay) ? ' with delay':' without delay'));
                 if (delay) {
                     self.delay.replace(
                         deviceId,
@@ -240,16 +250,33 @@ DeviceMove.prototype.setStatus = function(deviceId,level) {
 
     if (level >= 99) {
         level = 100;
+    } else if (level <= 0) {
+        level = 0;
     }
 
     // Set virtual device
-    virtualDevice.set('metrics:level',level);
+    virtualDevice.set('metrics:level',level,{ 'silent': true });
+    var targetLevel = virtualDevice.get('metrics:target');
+    if (targetLevel !== null) {
+        targetLevel = parseInt(targetLevel,10);
+        if (targetLevel === level) {
+            virtualDevice.set('metrics:target',null,{ 'silent': true });
+        }
+    }
 };
 
 DeviceMove.prototype.moveDevice = function(deviceId,level,source) {
     var self = this;
 
     self.log('Got move device '+ deviceId+' to '+level+' from '+source);
+    var virtualDevice   = self.virtualDevices[deviceId];
+    var oldLevel        = Math.min(virtualDevice.get('metrics:level'),100);
+    var target          = virtualDevice.get('metrics:target');
+
+    if (target !== null && target !== level) {
+        self.log('Device '+ deviceId+' tagret race. Skip');
+        return;
+    }
 
     // Check if already running
     if (self.lock.running(deviceId)) {
@@ -265,8 +292,6 @@ DeviceMove.prototype.moveDevice = function(deviceId,level,source) {
         return;
     }
 
-    var virtualDevice   = self.virtualDevices[deviceId];
-    var oldLevel        =  Math.min(virtualDevice.get('metrics:level'),100);
     var realDevice      = self.controller.devices.get(deviceId);
     var deviceEntry     = _.find(self.config.devices,function(deviceEntry) { return deviceEntry.device === deviceId; });
     if (deviceEntry === null) {
@@ -328,7 +353,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level,source) {
                 self.log('Not movining due to related device at '+relatedLevel);
                 return;
             } else if (commandLevel !== newLevel) {
-                self.log('Constrained level to '+newLevel+' due to related device at '+relatedLevel);
+                self.log('Constrained level to '+newLevel+' due to related device at '+relatedLevel+' (Target '+target+')');
             }
         }
     }
@@ -340,8 +365,11 @@ DeviceMove.prototype.moveDevice = function(deviceId,level,source) {
             deviceId,
             function() {
                 self.pollDevice(deviceId);
-                virtualDevice.set('metrics:level',newLevel);
-                self.stopDevice(deviceId);
+                self.setStatus(deviceId,newLevel);
+                virtualDevice.set('metrics:action',null);
+                //self.stopDevice(deviceId);
+                // Repeat to make sure
+                //realDevice.performCommand(moveCommand);
             },
             (maxTime*1.1*1000)
         );
@@ -359,8 +387,11 @@ DeviceMove.prototype.moveDevice = function(deviceId,level,source) {
             deviceId,
             function() {
                 self.pollDevice(deviceId);
-                virtualDevice.set('metrics:level',newLevel);
-                self.stopDevice(deviceId);
+                self.setStatus(deviceId,newLevel);
+                virtualDevice.set('metrics:action',null);
+                //self.stopDevice(deviceId);
+                // Repeat to make sure
+                //realDevice.performCommand(moveCommand);
             },
             (maxTime*1.1*1000)
         );
@@ -385,8 +416,8 @@ DeviceMove.prototype.moveDevice = function(deviceId,level,source) {
         self.lock.add(
             deviceId,
             function() {
+                self.setStatus(deviceId,newLevel);
                 self.stopDevice(deviceId);
-                virtualDevice.set('metrics:level',newLevel);
             },
             (diffTime * 1000)
         );
@@ -399,6 +430,7 @@ DeviceMove.prototype.moveDevice = function(deviceId,level,source) {
         self.log('Move device '+deviceId+' from '+oldLevel+' to '+newLevel+' for '+diffTime+' seconds');
     }
 
+    virtualDevice.set('metrics:modificationTime',Math.floor(new Date().getTime() / 1000),{ silent: true });
     realDevice.performCommand(moveCommand);
     self.setStatus(deviceId,newLevel);
 };
@@ -414,7 +446,7 @@ DeviceMove.prototype.stopDevice = function(deviceId) {
     );
 
     self.virtualDevices[deviceId].set('metrics:action',null);
-    self.virtualDevices[deviceId].set('metrics:target',null,{ 'silent': true });
+    //self.virtualDevices[deviceId].set('metrics:target',null,{ 'silent': true });
 
     realDevice.performCommand("stop");
     realDevice.performCommand("update");
@@ -525,6 +557,7 @@ DeviceMove.prototype.checkDevice = function(deviceId,args) {
             self.log('Detected target mismatch for '+deviceId+'. Now moving');
             self.moveDevice(deviceId,targetLevel,'check');
         } else if (virtualLevel === targetLevel) {
+            self.log('Reached target for '+deviceId+'. Reset');
             virtualDevice.set('metrics:target',null,{ silent: true });
         }
     }
